@@ -3,9 +3,15 @@
 class Sale extends Model {
     protected string $table = 'sales';
 
-    public function getAll(array $filters = []): array {
+    public function getAll(array $filters = [], ?int $companyId = null): array {
         $sql = "SELECT s.* FROM sales s WHERE 1=1";
         $params = [];
+
+        // Company scoping
+        if ($companyId !== null) {
+            $sql .= " AND s.company_id = ?";
+            $params[] = $companyId;
+        }
 
         // Date range
         if (!empty($filters['date_from'])) {
@@ -50,9 +56,14 @@ class Sale extends Model {
      * @param array $items     [['product_id', 'product_name', 'quantity', 'unit_price', 'purchase_price', 'subtotal'], ...]
      * @return int Sale ID
      */
-    public function createWithItems(array $saleData, array $items): int {
+    public function createWithItems(array $saleData, array $items, ?int $companyId = null): int {
         try {
             $this->db->beginTransaction();
+
+            // Add company_id if provided
+            if ($companyId !== null) {
+                $saleData['company_id'] = $companyId;
+            }
 
             // Insert sale
             $saleId = $this->create($saleData);
@@ -84,70 +95,260 @@ class Sale extends Model {
 
     // ─── Dashboard Stats ────────────────────────────────────────────
 
-    public function getTodaySales(): float {
-        $row = $this->query(
-            "SELECT COALESCE(SUM(final_total), 0) AS total FROM sales WHERE DATE(created_at) = DATE('now')"
-        )->fetch();
+    public function getTodaySales(?int $companyId = null, ?bool $fortnightOnly = false): float {
+        $sql = "SELECT COALESCE(SUM(s.final_total), 0) AS total FROM sales s WHERE DATE(s.created_at) = DATE('now')";
+        $params = [];
+
+        if ($companyId !== null) {
+            $sql .= " AND s.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        if ($fortnightOnly) {
+            $range = current_fortnight_range();
+            $sql .= " AND DATE(s.created_at) BETWEEN ? AND ?";
+            $params[] = $range['start'];
+            $params[] = $range['end'];
+        }
+
+        $row = $this->query($sql, $params)->fetch();
         return (float) ($row['total'] ?? 0);
     }
 
-    public function getTotalSales(): float {
-        $row = $this->query("SELECT COALESCE(SUM(final_total), 0) AS total FROM sales")->fetch();
+    public function getTotalSales(?int $companyId = null, ?bool $fortnightOnly = false): float {
+        $sql = "SELECT COALESCE(SUM(s.final_total), 0) AS total FROM sales s";
+        $params = [];
+
+        if ($companyId !== null) {
+            $sql .= " WHERE s.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        if ($fortnightOnly) {
+            $range = current_fortnight_range();
+            if ($companyId === null) {
+                $sql .= " WHERE 1=1";
+            }
+            $sql .= " AND DATE(s.created_at) BETWEEN ? AND ?";
+            $params[] = $range['start'];
+            $params[] = $range['end'];
+        }
+
+        $row = $this->query($sql, $params)->fetch();
         return (float) ($row['total'] ?? 0);
     }
 
-    public function getTotalCost(): float {
-        $row = $this->query(
-            "SELECT COALESCE(SUM(si.purchase_price * si.quantity), 0) AS total FROM sale_items si"
-        )->fetch();
+    public function getTotalCost(?int $companyId = null, ?bool $fortnightOnly = false): float {
+        $sql = "SELECT COALESCE(SUM(si.purchase_price * si.quantity), 0) AS total
+                FROM sale_items si
+                JOIN sales s ON si.sale_id = s.id";
+        $params = [];
+        $hasWhere = false;
+
+        if ($companyId !== null) {
+            $sql .= " AND s.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        if ($fortnightOnly) {
+            $range = current_fortnight_range();
+            $sql .= " WHERE 1=1";
+            $hasWhere = true;
+            // Re-add company_id as WHERE clause if set (moved from JOIN AND)
+            if ($companyId !== null) {
+                $sql .= " AND s.company_id = ?";
+                $params[] = $companyId;
+            }
+            $sql .= " AND DATE(s.created_at) BETWEEN ? AND ?";
+            $params[] = $range['start'];
+            $params[] = $range['end'];
+        }
+
+        $row = $this->query($sql, $params)->fetch();
         return (float) ($row['total'] ?? 0);
     }
 
-    public function getGrossProfit(): float {
-        return $this->getTotalSales() - $this->getTotalCost();
+    public function getGrossProfit(?int $companyId = null): float {
+        return $this->getTotalSales($companyId) - $this->getTotalCost($companyId);
     }
 
-    public function getTodayProfit(): float {
-        $sales = $this->query(
-            "SELECT COALESCE(SUM(si.purchase_price * si.quantity), 0) AS cost
-             FROM sale_items si
-             JOIN sales s ON si.sale_id = s.id
-             WHERE DATE(s.created_at) = DATE('now')"
-        )->fetch();
+    public function getTodayProfit(?int $companyId = null, ?bool $fortnightOnly = false): float {
+        $sql = "SELECT COALESCE(SUM(si.purchase_price * si.quantity), 0) AS cost
+                FROM sale_items si
+                JOIN sales s ON si.sale_id = s.id";
+        $params = [];
+
+        if ($companyId !== null) {
+            $sql .= " AND s.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        $sql .= " WHERE DATE(s.created_at) = DATE('now')";
+
+        if ($fortnightOnly) {
+            $range = current_fortnight_range();
+            $sql .= " AND DATE(s.created_at) BETWEEN ? AND ?";
+            $params[] = $range['start'];
+            $params[] = $range['end'];
+        }
+
+        $sales = $this->query($sql, $params)->fetch();
         $cost = (float) ($sales['cost'] ?? 0);
 
-        $todaySales = $this->getTodaySales();
+        $todaySales = $this->getTodaySales($companyId);
         return $todaySales - $cost;
     }
 
-    public function getTotalDiscounts(): float {
-        $row = $this->query("SELECT COALESCE(SUM(discount_amount), 0) AS total FROM sales")->fetch();
+    public function getTotalDiscounts(?int $companyId = null, ?bool $fortnightOnly = false): float {
+        $sql = "SELECT COALESCE(SUM(s.discount_amount), 0) AS total FROM sales s";
+        $params = [];
+
+        if ($companyId !== null) {
+            $sql .= " WHERE s.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        if ($fortnightOnly) {
+            $range = current_fortnight_range();
+            if ($companyId === null) {
+                $sql .= " WHERE 1=1";
+            }
+            $sql .= " AND DATE(s.created_at) BETWEEN ? AND ?";
+            $params[] = $range['start'];
+            $params[] = $range['end'];
+        }
+
+        $row = $this->query($sql, $params)->fetch();
         return (float) ($row['total'] ?? 0);
     }
 
-    public function getSaleCount(): int {
-        $row = $this->query("SELECT COUNT(*) AS count FROM sales")->fetch();
+    public function getSaleCount(?int $companyId = null, ?bool $fortnightOnly = false): int {
+        $sql = "SELECT COUNT(*) AS count FROM sales s";
+        $params = [];
+
+        if ($companyId !== null) {
+            $sql .= " WHERE s.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        if ($fortnightOnly) {
+            $range = current_fortnight_range();
+            if ($companyId === null) {
+                $sql .= " WHERE 1=1";
+            }
+            $sql .= " AND DATE(s.created_at) BETWEEN ? AND ?";
+            $params[] = $range['start'];
+            $params[] = $range['end'];
+        }
+
+        $row = $this->query($sql, $params)->fetch();
         return (int) ($row['count'] ?? 0);
     }
 
-    public function getRecentSales(int $limit = 10): array {
-        return $this->query(
-            "SELECT s.* FROM sales s ORDER BY s.created_at DESC LIMIT ?",
-            [$limit]
-        )->fetchAll();
+    public function getRecentSales(int $limit = 10, ?int $companyId = null, ?bool $fortnightOnly = false): array {
+        $sql = "SELECT s.* FROM sales s";
+        $params = [];
+
+        if ($companyId !== null) {
+            $sql .= " WHERE s.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        if ($fortnightOnly) {
+            $range = current_fortnight_range();
+            if ($companyId === null) {
+                $sql .= " WHERE 1=1";
+            }
+            $sql .= " AND DATE(s.created_at) BETWEEN ? AND ?";
+            $params[] = $range['start'];
+            $params[] = $range['end'];
+        }
+
+        $sql .= " ORDER BY s.created_at DESC LIMIT ?";
+        $params[] = $limit;
+
+        return $this->query($sql, $params)->fetchAll();
     }
 
-    public function getSalesByDay(int $days = 30): array {
-        return $this->query(
-            "SELECT DATE(created_at) AS day,
+    public function getSalesByDay(int $days = 30, ?int $companyId = null, ?bool $fortnightOnly = false): array {
+        $sql = "SELECT DATE(s.created_at) AS day,
+                       COUNT(*) AS sale_count,
+                       COALESCE(SUM(s.final_total), 0) AS total,
+                       COALESCE(SUM(s.discount_amount), 0) AS discounts
+                FROM sales s
+                WHERE s.created_at >= DATE('now', '-' || ? || ' days')";
+        $params = [$days];
+
+        if ($companyId !== null) {
+            $sql .= " AND s.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        if ($fortnightOnly) {
+            $range = current_fortnight_range();
+            $sql .= " AND DATE(s.created_at) BETWEEN ? AND ?";
+            $params[] = $range['start'];
+            $params[] = $range['end'];
+        }
+
+        $sql .= " GROUP BY DATE(s.created_at)
+                  ORDER BY day ASC";
+
+        return $this->query($sql, $params)->fetchAll();
+    }
+
+    // ─── Accounting Stats ───────────────────────────────────────────
+
+    public function getMonthlyStats(?int $companyId = null, ?string $year = null): array {
+        $year = $year ?? date('Y');
+        $monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+        $sql = "SELECT
+                    strftime('%m', s.created_at) AS month,
                     COUNT(*) AS sale_count,
-                    COALESCE(SUM(final_total), 0) AS total,
-                    COALESCE(SUM(discount_amount), 0) AS discounts
-             FROM sales
-             WHERE created_at >= DATE('now', '-' || ? || ' days')
-             GROUP BY DATE(created_at)
-             ORDER BY day ASC",
-            [$days]
-        )->fetchAll();
+                    COALESCE(SUM(s.final_total), 0) AS total_sales,
+                    COALESCE(SUM(s.discount_amount), 0) AS total_discounts,
+                    COALESCE(SUM(si.purchase_price * si.quantity), 0) AS total_cost
+                FROM sales s
+                LEFT JOIN sale_items si ON si.sale_id = s.id
+                WHERE strftime('%Y', s.created_at) = ?";
+        $params = [$year];
+
+        if ($companyId !== null) {
+            $sql .= " AND s.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        $sql .= " GROUP BY strftime('%m', s.created_at) ORDER BY month ASC";
+
+        $rows = $this->query($sql, $params)->fetchAll();
+
+        // Ensure all 12 months are present
+        $result = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $monthKey = sprintf('%02d', $m);
+            $found = false;
+            foreach ($rows as $row) {
+                if ($row['month'] === $monthKey) {
+                    $row['month_name'] = $monthNames[$m - 1];
+                    $row['gross_profit'] = (float)$row['total_sales'] - (float)$row['total_cost'];
+                    $result[] = $row;
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $result[] = [
+                    'month' => $monthKey,
+                    'month_name' => $monthNames[$m - 1],
+                    'sale_count' => 0,
+                    'total_sales' => 0,
+                    'total_discounts' => 0,
+                    'total_cost' => 0,
+                    'gross_profit' => 0,
+                ];
+            }
+        }
+        return $result;
     }
 }

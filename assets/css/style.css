@@ -1,4 +1,4 @@
-/* ─── PetShop MVC ── Yellow / Black / White Theme ─────────── */
+/* ─── QueenShop MVC ── Yellow / Black / White Theme ─────────── */
 
 /* ─── Bootstrap CSS Variable Overrides ────────────────────── */
 :root {
@@ -38,6 +38,9 @@
 .text-warning {
     color: #ffc107 !important;
 }
+.text-muted {
+    color: #495057 !important;
+}
 
 /* --- bg-* --- */
 .bg-success {
@@ -74,7 +77,7 @@ html, body {
 body {
     display: flex;
     flex-direction: column;
-    background-color: #f5f5f5;
+    background-color: #fff;
 }
 
 main {
@@ -121,7 +124,7 @@ main {
 }
 
 .navbar.bg-dark .navbar-text {
-    color: rgba(255, 255, 255, 0.6) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .navbar.bg-dark .navbar-toggler {
@@ -130,6 +133,11 @@ main {
 
 .navbar.bg-dark .navbar-toggler-icon {
     filter: brightness(0) saturate(100%) invert(88%) sepia(29%) saturate(700%) hue-rotate(5deg);
+}
+
+/* Smooth dark mode transitions */
+html {
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ─── Buttons ─────────────────────────────────────────────── */
@@ -236,13 +244,17 @@ main {
 .card {
     border: none;
     border-radius: 0.75rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition: box-shadow 0.2s ease, transform 0.2s ease;
     overflow: hidden;
 }
 
 .card:hover {
     box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(255, 193, 7, 0.15);
 }
 
 /* KPI Cards with yellow accent */
@@ -362,6 +374,16 @@ main {
     font-size: 0.875rem;
 }
 
+/* ─── Toggle switch ───────────────────────────────────────── */
+.form-check-input:checked {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+.form-check-input:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
 /* ─── Links ───────────────────────────────────────────────── */
 a {
     color: #ffc107;
@@ -475,7 +497,7 @@ a:hover {
         background-color: #2a2a2a !important;
     }
     .text-muted {
-        color: #9ca3af !important;
+        color: #adb5bd !important;
     }
     .list-group-item {
         background-color: #2a2a2a;

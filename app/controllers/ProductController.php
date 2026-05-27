@@ -14,9 +14,10 @@ class ProductController extends Controller {
             'stock'       => $_GET['stock'] ?? '',
             'sort'        => $_GET['sort'] ?? 'name',
             'order'       => $_GET['order'] ?? 'ASC',
+            'company_id'  => current_company_id(),
         ];
 
-        $products   = $this->product->getAll($filters);
+        $products   = $this->product->getAll($filters, current_company_id());
         $categories = $this->product->getAllCategories();
 
         $this->view('products/index', [
@@ -63,6 +64,7 @@ class ProductController extends Controller {
             'stock'          => $stock,
             'category_id'    => $categoryId,
             'image'          => $image,
+            'company_id'     => current_company_id(),
         ]);
 
         session_flash('success', 'Producto creado correctamente.');
@@ -70,7 +72,7 @@ class ProductController extends Controller {
     }
 
     public function edit(int $id): void {
-        $product = $this->product->findWithCategory($id);
+        $product = $this->product->findWithCompanyCheck($id, current_company_id());
         if (!$product) {
             session_flash('error', 'Producto no encontrado.');
             $this->redirect('/products');
@@ -86,7 +88,7 @@ class ProductController extends Controller {
     }
 
     public function update(int $id): void {
-        $product = $this->product->find($id);
+        $product = $this->product->findWithCompanyCheck($id, current_company_id());
         if (!$product) {
             session_flash('error', 'Producto no encontrado.');
             $this->redirect('/products');
@@ -130,7 +132,7 @@ class ProductController extends Controller {
     }
 
     public function destroy(int $id): void {
-        $product = $this->product->find($id);
+        $product = $this->product->findWithCompanyCheck($id, current_company_id());
         if ($product) {
             // Delete image
             if ($product['image'] && file_exists(__DIR__ . '/../../' . $product['image'])) {
@@ -143,7 +145,7 @@ class ProductController extends Controller {
     }
 
     public function restock(int $id): void {
-        $product = $this->product->find($id);
+        $product = $this->product->findWithCompanyCheck($id, current_company_id());
         if (!$product) {
             session_flash('error', 'Producto no encontrado.');
             $this->redirect('/products');
@@ -164,7 +166,7 @@ class ProductController extends Controller {
 
     public function apiList(): void {
         $search = $_GET['q'] ?? '';
-        $products = $this->product->apiSearch($search);
+        $products = $this->product->apiSearch($search, current_company_id());
         $this->json($products);
     }
 

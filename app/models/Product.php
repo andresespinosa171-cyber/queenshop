@@ -3,12 +3,18 @@
 class Product extends Model {
     protected string $table = 'products';
 
-    public function getAll(array $filters = []): array {
+    public function getAll(array $filters = [], ?int $companyId = null): array {
         $sql = "SELECT p.*, c.name AS category_name
                 FROM products p
                 LEFT JOIN categories c ON p.category_id = c.id
                 WHERE 1=1";
         $params = [];
+
+        // Company scoping
+        if ($companyId !== null) {
+            $sql .= " AND p.company_id = ?";
+            $params[] = $companyId;
+        }
 
         // Search by name
         if (!empty($filters['search'])) {
@@ -81,25 +87,36 @@ class Product extends Model {
         )->fetch();
     }
 
-    public function getLowStock(int $threshold = 5): array {
-        return $this->query(
-            "SELECT p.*, c.name AS category_name
-             FROM products p
-             LEFT JOIN categories c ON p.category_id = c.id
-             WHERE p.stock <= ? AND p.stock > 0
-             ORDER BY p.stock ASC",
-            [$threshold]
-        )->fetchAll();
+    public function getLowStock(int $threshold = 5, ?int $companyId = null): array {
+        $sql = "SELECT p.*, c.name AS category_name
+                FROM products p
+                LEFT JOIN categories c ON p.category_id = c.id
+                WHERE p.stock <= ? AND p.stock > 0";
+        $params = [$threshold];
+
+        if ($companyId !== null) {
+            $sql .= " AND p.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        $sql .= " ORDER BY p.stock ASC";
+        return $this->query($sql, $params)->fetchAll();
     }
 
-    public function getOutOfStock(): array {
-        return $this->query(
-            "SELECT p.*, c.name AS category_name
-             FROM products p
-             LEFT JOIN categories c ON p.category_id = c.id
-             WHERE p.stock = 0
-             ORDER BY p.name ASC"
-        )->fetchAll();
+    public function getOutOfStock(?int $companyId = null): array {
+        $sql = "SELECT p.*, c.name AS category_name
+                FROM products p
+                LEFT JOIN categories c ON p.category_id = c.id
+                WHERE p.stock = 0";
+        $params = [];
+
+        if ($companyId !== null) {
+            $sql .= " AND p.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        $sql .= " ORDER BY p.name ASC";
+        return $this->query($sql, $params)->fetchAll();
     }
 
     public function updateStock(int|string $id, int $quantity): void {
@@ -127,20 +144,41 @@ class Product extends Model {
         return $this->query("SELECT * FROM categories ORDER BY name")->fetchAll();
     }
 
-    public function getStockValue(): float {
-        $row = $this->query(
-            "SELECT COALESCE(SUM(purchase_price * stock), 0) AS total FROM products"
-        )->fetch();
+    public function getStockValue(?int $companyId = null): float {
+        $sql = "SELECT COALESCE(SUM(p.purchase_price * p.stock), 0) AS total FROM products p";
+        $params = [];
+
+        if ($companyId !== null) {
+            $sql .= " WHERE p.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        $row = $this->query($sql, $params)->fetch();
         return (float) ($row['total'] ?? 0);
     }
 
-    public function apiSearch(string $query): array {
+    public function apiSearch(string $query, ?int $companyId = null): array {
+        $sql = "SELECT id, name, sale_price, purchase_price, stock, image
+                FROM products
+                WHERE name LIKE ? AND stock > 0";
+        $params = ['%' . $query . '%'];
+
+        if ($companyId !== null) {
+            $sql .= " AND company_id = ?";
+            $params[] = $companyId;
+        }
+
+        $sql .= " ORDER BY name ASC LIMIT 20";
+        return $this->query($sql, $params)->fetchAll();
+    }
+
+    public function findWithCompanyCheck(int|string $id, int $companyId): array|false {
         return $this->query(
-            "SELECT id, name, sale_price, purchase_price, stock, image
-             FROM products
-             WHERE name LIKE ? AND stock > 0
-             ORDER BY name ASC LIMIT 20",
-            ['%' . $query . '%']
-        )->fetchAll();
+            "SELECT p.*, c.name AS category_name
+             FROM products p
+             LEFT JOIN categories c ON p.category_id = c.id
+             WHERE p.id = ? AND p.company_id = ?",
+            [$id, $companyId]
+        )->fetch();
     }
 }

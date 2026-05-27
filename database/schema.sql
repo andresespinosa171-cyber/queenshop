@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS users (
     company_id INTEGER NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
 );
@@ -77,5 +78,6 @@ INSERT OR IGNORE INTO companies (id, name) VALUES (1, 'QueenShop Norte');
 INSERT OR IGNORE INTO companies (id, name) VALUES (2, 'QueenShop Sur');
 
 -- Seed: Usuarios de demostración (contraseña = 123456 con BCrypt)
-INSERT OR IGNORE INTO users (id, company_id, username, password) VALUES (1, 1, 'norte', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
-INSERT OR IGNORE INTO users (id, company_id, username, password) VALUES (2, 2, 'sur', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (1, 1, 'norte', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'user');
+INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (2, 2, 'sur', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'user');
+INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (3, 1, 'admin', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'admin');

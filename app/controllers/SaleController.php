@@ -15,7 +15,7 @@ class SaleController extends Controller {
             'date_to'   => $_GET['date_to'] ?? '',
         ];
 
-        $sales = $this->sale->getAll($filters);
+        $sales = $this->sale->getAll($filters, current_company_id());
         $this->view('sales/index', [
             'sales'   => $sales,
             'filters' => $filters,
@@ -74,7 +74,7 @@ class SaleController extends Controller {
                 'discount_amount' => $discountAmount,
                 'final_total'     => $finalTotal,
                 'item_count'      => $itemCount,
-            ], $items);
+            ], $items, current_company_id());
 
             session_flash('success', 'Venta registrada correctamente.');
             $this->redirect('/sales');
@@ -86,7 +86,7 @@ class SaleController extends Controller {
 
     public function show(int $id): void {
         $sale = $this->sale->findWithItems($id);
-        if (!$sale) {
+        if (!$sale || (isset($sale['company_id']) && (int) $sale['company_id'] !== current_company_id())) {
             session_flash('error', 'Venta no encontrada.');
             $this->redirect('/sales');
             return;
@@ -108,7 +108,7 @@ class SaleController extends Controller {
         $filters['sort'] = 'name';
         $filters['order'] = 'ASC';
 
-        $products = $this->product->getAll($filters);
+        $products = $this->product->getAll($filters, current_company_id());
         $this->json($products);
     }
 }

@@ -1,4 +1,24 @@
-<h4 class="mb-3"><i class="bi bi-grid-1x2-fill"></i> Dashboard</h4>
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <h4 class="mb-0"><i class="bi bi-grid-1x2-fill"></i> Dashboard</h4>
+    <div class="d-flex align-items-center gap-2">
+        <?php if ($fortnightOnly): ?>
+            <span class="badge bg-warning text-dark px-3 py-2">
+                <i class="bi bi-calendar-range"></i> Quincena actual
+                <small class="ms-1">(<?= date('d/m', strtotime($currentFortnight['start'])) ?> - <?= date('d/m', strtotime($currentFortnight['end'])) ?>)</small>
+            </span>
+            <a href="/dashboard?all=1" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-clock-history"></i> Ver todo
+            </a>
+        <?php else: ?>
+            <span class="badge bg-dark text-warning px-3 py-2">
+                <i class="bi bi-globe"></i> Todo el tiempo
+            </span>
+            <a href="/dashboard" class="btn btn-sm btn-outline-warning">
+                <i class="bi bi-calendar-range"></i> Solo quincena
+            </a>
+        <?php endif; ?>
+    </div>
+</div>
 
 <!-- ─── KPI Cards ────────────────────────────────────────────── -->
 <div class="row g-3 mb-4">

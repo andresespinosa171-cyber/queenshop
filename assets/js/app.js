@@ -79,8 +79,80 @@ document.addEventListener('DOMContentLoaded', function () {
             if (q.length >= 1 || currentCategory) {
                 fetchProducts(q, currentCategory);
             }
-        });
     });
+});
+
+/* ─── Accounting Chart ───────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function () {
+    const canvas = document.getElementById('accountingChart');
+    if (!canvas || typeof accountingLabels === 'undefined') return;
+
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: accountingLabels,
+            datasets: [{
+                label: 'Ventas',
+                data: accountingSales,
+                backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                borderColor: 'rgba(255, 193, 7, 1)',
+                borderWidth: 1,
+                borderRadius: 4,
+                order: 1
+            }, {
+                label: 'Ganancia',
+                data: accountingProfit,
+                backgroundColor: 'rgba(25, 135, 84, 0.6)',
+                borderColor: 'rgba(25, 135, 84, 1)',
+                borderWidth: 1,
+                borderRadius: 4,
+                order: 2
+            }, {
+                label: 'Costo',
+                data: accountingCosts,
+                backgroundColor: 'rgba(220, 53, 69, 0.5)',
+                borderColor: 'rgba(220, 53, 69, 1)',
+                borderWidth: 1,
+                borderRadius: 4,
+                order: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 12,
+                        font: { size: 12 }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function (value) {
+                            return '$' + value.toFixed(0);
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+});
 
     function fetchProducts(q, cat) {
         cat = cat || currentCategory;

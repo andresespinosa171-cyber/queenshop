@@ -15,3 +15,7 @@ function current_company_id(): int {
 function current_company_name(): string {
     return $_SESSION['company_name'] ?? '';
 }
+
+function is_admin(): bool {
+    return ($_SESSION['role'] ?? '') === 'admin';
+}

@@ -34,6 +34,7 @@ class AuthController extends Controller {
         $_SESSION['company_id'] = $user['company_id'];
         $_SESSION['company_name'] = $user['company_name'];
         $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role'];
 
         $this->redirect('/');
     }
