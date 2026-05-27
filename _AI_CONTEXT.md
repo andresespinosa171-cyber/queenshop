@@ -123,4 +123,4 @@ php -S localhost:8080 -t /project/workspace
 
 ## Última actualización
 
-2026-05-27 — Sesión 2: mejora visual completa — paleta cálida, texto más visible y llamativo, botones outline renovados, dark mode mejorado.
+2026-05-27 — Sesión 2: mejora visual completa — paleta cálida, texto más visible y llamativo, botones outline renovados, dark mode mejorado, login/register centrados verticalmente con inputs grandes y responsive.
