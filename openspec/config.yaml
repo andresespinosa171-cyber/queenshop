@@ -1,0 +1,55 @@
+# openspec/config.yaml
+schema: spec-driven
+
+context: |
+  Project: PetShop MVC (PHP)
+  Stack: PHP 8.2, SQLite (PDO), Apache (.htaccess rewrites), Bootstrap 5.3 + Bootstrap Icons + Chart.js
+  Architecture: Custom MVC — no framework (Router, Controller, Model base classes), autoloader via spl_autoload_register, PDO-based SQLite persistence with WAL mode
+  Language: Spanish (UI labels, flash messages, schema comments)
+  Directory structure: app/{core,controllers,models,views,helpers}, assets/{css,js,img}, config/, database/
+  No Composer, no package manager for PHP. Node deps are Codesandbox runtime only (@codesandbox/nodebox), not project code.
+  Conventions: session-based flash messaging, extract()-based view rendering, abstract Model CRUD, Router with regex param matching, no CSRF middleware
+
+strict_tdd: false
+
+testing:
+  runner: null
+  runner_available: false
+  layers:
+    unit: false
+    integration: false
+    e2e: false
+  coverage: false
+  coverage_command: null
+  quality:
+    linter: false
+    type_checker: false
+    formatter: false
+  note: >
+    No PHP test runner is configured. No composer.json found. PHPUnit, Pest, or any
+    testing framework is not installed. Strict TDD is set to false because no test
+    runner was detected. To enable TDD, add PHPUnit via Composer and configure tests.
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes (e.g., schema migrations, data loss)
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - Specs in Spanish (matching project language)
+  design:
+    - Document architecture decisions with rationale
+    - Include affected routes and templates
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    - Follow existing code patterns (custom MVC, no framework)
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: ""
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
