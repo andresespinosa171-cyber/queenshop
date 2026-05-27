@@ -99,6 +99,7 @@ QueenShop MVC — Sistema multi-empresa de gestión de tienda de mascotas.
 | Gráficas | Chart.js (ya incluido) | Sin dependencias nuevas |
 | Moneda | COP ($1.234.567) | Sin decimales, punto como separador de miles |
 | Timezone | America/Bogota | Colombia |
+| Tema visual | Amarillo/negro con paleta cálida | `--warm-bg: #fefcf5`, `--warm-muted: #5c4d2e`, `--warm-text: #2a2410` — fondos cálidos, texto con más contraste y calidez |
 
 ---
 
@@ -122,4 +123,4 @@ php -S localhost:8080 -t /project/workspace
 
 ## Última actualización
 
-2026-05-27 — Sesión completa: auth, scoping, rebrand, contabilidad, admin, charts.
+2026-05-27 — Sesión 2: mejora visual completa — paleta cálida, texto más visible y llamativo, botones outline renovados, dark mode mejorado.
