@@ -12,7 +12,7 @@ QueenShop MVC — Sistema multi-empresa de gestión de tienda de mascotas.
 - **Stack**: PHP 8.2, SQLite (PDO), Bootstrap 5.3, Chart.js, Bootstrap Icons
 - **Arquitectura**: MVC custom (Router, Controller, Model base), sin framework
 - **Idioma**: Español (Rioplatense)
-- **Tema**: Amarillo/Negro/Blanco
+- **Tema**: Oscuro/Fondo #121212, texto blanco, amarillo primario, verde dinero positivo
 - **Repo**: https://github.com/andresespinosa171-cyber/queenshop-mvc
 
 ---
@@ -99,7 +99,7 @@ QueenShop MVC — Sistema multi-empresa de gestión de tienda de mascotas.
 | Gráficas | Chart.js (ya incluido) | Sin dependencias nuevas |
 | Moneda | COP ($1.234.567) | Sin decimales, punto como separador de miles |
 | Timezone | America/Bogota | Colombia |
-| Tema visual | Amarillo/negro con paleta cálida | `--warm-bg: #fefcf5`, `--warm-muted: #5c4d2e`, `--warm-text: #2a2410` — fondos cálidos, texto con más contraste y calidez |
+| Tema visual | Oscuro con amarillo primario | Fondo #121212, texto blanco, amarillo (#ffc107) como color principal, verde (#28a745) para dinero positivo, rojo para pérdidas |
 
 ---
 
@@ -123,4 +123,4 @@ php -S localhost:8080 -t /project/workspace
 
 ## Última actualización
 
-2026-05-27 — Sesión 2: mejora visual completa — paleta cálida, texto más visible y llamativo, botones outline renovados, dark mode mejorado, login/register centrados verticalmente con inputs grandes y responsive.
+2026-05-27 — Sesión 3: overhaul visual completo a tema oscuro — fondo #121212, texto blanco, amarillo como color principal (#ffc107), verde para dinero positivo (#28a745), rojo para pérdidas. Login/register centrados con inputs grandes.

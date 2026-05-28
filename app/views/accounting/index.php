@@ -27,7 +27,7 @@
             <div class="card-body text-center">
                 <div class="text-warning mb-2"><i class="bi bi-currency-dollar fs-2"></i></div>
                 <h6 class="card-title text-muted small text-uppercase">Ventas Totales</h6>
-                <p class="fs-4 fw-bold mb-0 text-warning"><?= format_currency($totalSales) ?></p>
+                <p class="fs-4 fw-bold mb-0 text-success"><?= format_currency($totalSales) ?></p>
             </div>
         </div>
     </div>
@@ -36,7 +36,7 @@
             <div class="card-body text-center">
                 <div class="text-warning mb-2"><i class="bi bi-graph-up-arrow fs-2"></i></div>
                 <h6 class="card-title text-muted small text-uppercase">Ganancia Neta</h6>
-                <p class="fs-4 fw-bold mb-0 <?= $totalProfit >= 0 ? 'text-warning' : 'text-danger' ?>">
+                <p class="fs-4 fw-bold mb-0 <?= $totalProfit >= 0 ? 'text-success' : 'text-danger' ?>">
                     <?= format_currency($totalProfit) ?>
                 </p>
             </div>
@@ -96,7 +96,7 @@
                             <td class="fw-medium"><?= $row['month_name'] ?></td>
                             <td class="text-end"><?= format_currency((float)$row['total_sales']) ?></td>
                             <td class="text-end"><?= format_currency((float)$row['total_cost']) ?></td>
-                            <td class="text-end <?= (float)$row['gross_profit'] >= 0 ? 'text-warning' : 'text-danger' ?>">
+                            <td class="text-end <?= (float)$row['gross_profit'] >= 0 ? 'text-success' : 'text-danger' ?>">
                                 <?= format_currency((float)$row['gross_profit']) ?>
                             </td>
                             <td class="text-end text-danger"><?= format_currency((float)$row['total_discounts']) ?></td>

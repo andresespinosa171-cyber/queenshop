@@ -27,7 +27,7 @@
             <div class="card-body text-center">
                 <div class="text-warning mb-2"><i class="bi bi-currency-dollar fs-2"></i></div>
                 <h6 class="card-title text-muted small text-uppercase">Ventas Totales</h6>
-                <p class="fs-4 fw-bold mb-0 text-warning"><?= format_currency($totalSales) ?></p>
+                <p class="fs-4 fw-bold mb-0 text-success"><?= format_currency($totalSales) ?></p>
             </div>
         </div>
     </div>
@@ -36,7 +36,7 @@
             <div class="card-body text-center">
                 <div class="text-warning mb-2"><i class="bi bi-graph-up-arrow fs-2"></i></div>
                 <h6 class="card-title text-muted small text-uppercase">Ganancia Bruta</h6>
-                <p class="fs-4 fw-bold mb-0 <?= $grossProfit >= 0 ? 'text-warning' : 'text-danger' ?>">
+                <p class="fs-4 fw-bold mb-0 <?= $grossProfit >= 0 ? 'text-success' : 'text-danger' ?>">
                     <?= format_currency($grossProfit) ?>
                 </p>
                 <small class="text-muted">Margen: <?= $profitMargin ?>%</small>
@@ -58,7 +58,7 @@
             <div class="card-body text-center">
                 <div class="text-warning mb-2"><i class="bi bi-receipt fs-2"></i></div>
                 <h6 class="card-title text-muted small text-uppercase">Ventas Hoy</h6>
-                <p class="fs-4 fw-bold mb-0 text-warning"><?= format_currency($todaySales) ?></p>
+                <p class="fs-4 fw-bold mb-0 text-success"><?= format_currency($todaySales) ?></p>
                 <small class="text-muted">Ganancia: <?= format_currency($todayProfit) ?></small>
             </div>
         </div>
