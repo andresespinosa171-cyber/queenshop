@@ -64,13 +64,18 @@ $router->get('/sales/{id}',     'SaleController@show');
 // API (JSON)
 $router->get('/api/products', 'ProductController@apiList');
 
-// ─── Auth Guard ───────────────────────────────────────────────
-$publicRoutes = ['/login', '/register', '/logout'];
+// ─── Normalizar URI (saca BASE_URL del path) ──────────────────
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = rtrim($uri, '/') ?: '/';
+if (BASE_URL !== '' && str_starts_with($uri, BASE_URL)) {
+    $uri = substr($uri, strlen(BASE_URL)) ?: '/';
+}
+
+// ─── Auth Guard ───────────────────────────────────────────────
+$publicRoutes = ['/login', '/register', '/logout'];
 if (!in_array($uri, $publicRoutes, true)) {
     require_login();
 }
 
 // ─── Dispatch ─────────────────────────────────────────────────
-$router->dispatch();
+$router->dispatch($uri);

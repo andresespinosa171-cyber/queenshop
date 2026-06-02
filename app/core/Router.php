@@ -11,10 +11,15 @@ class Router {
         $this->routes['POST'][] = [$path, $handler];
     }
 
-    public function dispatch(): void {
+    public function dispatch(?string $uri = null): void {
         $method = $_SERVER['REQUEST_METHOD'];
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $uri = rtrim($uri, '/') ?: '/';
+        if ($uri === null) {
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            $uri = rtrim($uri, '/') ?: '/';
+            if (defined('BASE_URL') && BASE_URL !== '' && str_starts_with($uri, BASE_URL)) {
+                $uri = substr($uri, strlen(BASE_URL)) ?: '/';
+            }
+        }
 
         if (!isset($this->routes[$method])) {
             http_response_code(405);
