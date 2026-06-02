@@ -1,7 +1,7 @@
 <div class="row justify-content-center">
     <div class="col-12 col-lg-8">
         <div class="d-flex align-items-center gap-2 mb-3">
-            <a href="/sales" class="btn btn-outline-secondary btn-sm">
+            <a href="<?= BASE_URL ?>/sales" class="btn btn-outline-secondary btn-sm">
                 <i class="bi bi-arrow-left"></i>
             </a>
             <h4 class="mb-0"><i class="bi bi-receipt"></i> Venta #<?= $sale['id'] ?></h4>

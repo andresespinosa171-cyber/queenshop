@@ -1,6 +1,6 @@
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
     <h4 class="mb-0"><i class="bi bi-cart-fill"></i> Ventas</h4>
-    <a href="/sales/create" class="btn btn-success">
+    <a href="<?= BASE_URL ?>/sales/create" class="btn btn-success">
         <i class="bi bi-plus-lg"></i> Nueva Venta
     </a>
 </div>
@@ -22,7 +22,7 @@
             <i class="bi bi-funnel"></i> Filtrar
         </button>
         <?php if (!empty($filters['date_from']) || !empty($filters['date_to'])): ?>
-            <a href="/sales" class="btn btn-sm btn-outline-secondary">
+            <a href="<?= BASE_URL ?>/sales" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-x-circle"></i> Limpiar
             </a>
         <?php endif; ?>

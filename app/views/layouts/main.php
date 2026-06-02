@@ -6,14 +6,14 @@
     <title><?= htmlspecialchars($title ?? 'QueenShop') ?> — QueenShop MVC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="/assets/css/style.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/style.css" rel="stylesheet">
 </head>
 <body>
 
     <!-- ─── Navbar ─────────────────────────────────────────────── -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">
+            <a class="navbar-brand fw-bold" href="<?= BASE_URL ?>/">
                 <i class="bi bi-shop"></i> QueenShop
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
@@ -24,26 +24,26 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/dashboard') || $_SERVER['REQUEST_URI'] === '/' ? 'active' : '' ?>"
-                           href="/">
+                        <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], BASE_URL . '/dashboard') || $_SERVER['REQUEST_URI'] === BASE_URL . '/' || $_SERVER['REQUEST_URI'] === BASE_URL ? 'active' : '' ?>"
+                           href="<?= BASE_URL ?>/">
                             <i class="bi bi-grid-1x2-fill"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/product') ? 'active' : '' ?>"
-                           href="/products">
+                        <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], BASE_URL . '/product') ? 'active' : '' ?>"
+                           href="<?= BASE_URL ?>/products">
                             <i class="bi bi-box-seam-fill"></i> Productos
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/sale') ? 'active' : '' ?>"
-                           href="/sales">
+                        <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], BASE_URL . '/sale') ? 'active' : '' ?>"
+                           href="<?= BASE_URL ?>/sales">
                             <i class="bi bi-cart-fill"></i> Ventas
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/accounting') ? 'active' : '' ?>"
-                           href="/accounting">
+                        <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], BASE_URL . '/accounting') ? 'active' : '' ?>"
+                           href="<?= BASE_URL ?>/accounting">
                             <i class="bi bi-graph-up"></i> Contabilidad
                         </a>
                     </li>
@@ -56,7 +56,7 @@
                         <span class="navbar-text small text-light-emphasis">
                             <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['company_name'] ?? '') ?>
                         </span>
-                        <a href="/logout" class="btn btn-sm btn-outline-warning">
+                        <a href="<?= BASE_URL ?>/logout" class="btn btn-sm btn-outline-warning">
                             <i class="bi bi-box-arrow-right"></i> Salir
                         </a>
                     </div>
@@ -97,6 +97,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-    <script src="/assets/js/app.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/app.js"></script>
 </body>
 </html>

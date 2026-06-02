@@ -1,6 +1,6 @@
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
     <h4 class="mb-0"><i class="bi bi-box-seam-fill"></i> Productos</h4>
-    <a href="/products/create" class="btn btn-success">
+    <a href="<?= BASE_URL ?>/products/create" class="btn btn-success">
         <i class="bi bi-plus-lg"></i> Nuevo Producto
     </a>
 </div>
@@ -62,7 +62,7 @@
     </div>
     <?php if (!empty($filters['search']) || !empty($filters['category_id']) || !empty($filters['stock'])): ?>
         <div class="col-12">
-            <a href="/products" class="btn btn-sm btn-outline-secondary">
+            <a href="<?= BASE_URL ?>/products" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-x-circle"></i> Limpiar filtros
             </a>
         </div>

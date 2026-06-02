@@ -6,14 +6,14 @@
                 <i class="bi bi-calendar-range"></i> Quincena actual
                 <small class="ms-1">(<?= date('d/m', strtotime($currentFortnight['start'])) ?> - <?= date('d/m', strtotime($currentFortnight['end'])) ?>)</small>
             </span>
-            <a href="/dashboard?all=1" class="btn btn-sm btn-outline-secondary">
+            <a href="<?= BASE_URL ?>/dashboard?all=1" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-clock-history"></i> Ver todo
             </a>
         <?php else: ?>
             <span class="badge bg-dark text-warning px-3 py-2">
                 <i class="bi bi-globe"></i> Todo el tiempo
             </span>
-            <a href="/dashboard" class="btn btn-sm btn-outline-warning">
+            <a href="<?= BASE_URL ?>/dashboard" class="btn btn-sm btn-outline-warning">
                 <i class="bi bi-calendar-range"></i> Solo quincena
             </a>
         <?php endif; ?>
@@ -165,7 +165,7 @@
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
         <span class="fw-medium"><i class="bi bi-clock-history"></i> Ventas Recientes</span>
-        <a href="/sales" class="btn btn-sm btn-outline-secondary">Ver todas</a>
+        <a href="<?= BASE_URL ?>/sales" class="btn btn-sm btn-outline-secondary">Ver todas</a>
     </div>
     <div class="card-body p-0">
         <?php if (empty($recentSales)): ?>

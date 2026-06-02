@@ -1,13 +1,13 @@
 <div class="row justify-content-center">
     <div class="col-12 col-lg-10">
         <div class="d-flex align-items-center gap-2 mb-3">
-            <a href="/sales" class="btn btn-outline-secondary btn-sm">
+            <a href="<?= BASE_URL ?>/sales" class="btn btn-outline-secondary btn-sm">
                 <i class="bi bi-arrow-left"></i>
             </a>
             <h4 class="mb-0"><i class="bi bi-cart-plus"></i> Nueva Venta</h4>
         </div>
 
-        <form method="POST" action="/sales/store" id="saleForm">
+        <form method="POST" action="<?= BASE_URL ?>/sales/store" id="saleForm">
             <input type="hidden" name="items" id="itemsInput">
             <input type="hidden" name="total" id="totalInput">
             <input type="hidden" name="discount_percent" id="discountPercentInput">

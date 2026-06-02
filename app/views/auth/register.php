@@ -12,7 +12,7 @@
                 <h4 class="fw-bold mb-1">QueenShop</h4>
                 <p class="text-muted small mb-4">Crear nueva cuenta</p>
 
-                <form method="POST" action="/register" class="text-start">
+                <form method="POST" action="<?= BASE_URL ?>/register" class="text-start">
                     <div class="mb-3">
                         <label class="form-label small fw-medium">Usuario</label>
                         <input type="text" name="username" class="form-control form-control-lg" placeholder="Ej: miempresa" required minlength="3" maxlength="50" autofocus>
@@ -34,7 +34,7 @@
                 <hr class="my-4">
                 <p class="small text-muted mb-0">
                     ¿Ya tenés cuenta?
-                    <a href="/login" class="fw-medium text-decoration-none">Iniciar sesión</a>
+                    <a href="<?= BASE_URL ?>/login" class="fw-medium text-decoration-none">Iniciar sesión</a>
                 </p>
             </div>
         </div>

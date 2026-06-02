@@ -3,7 +3,7 @@
 function require_login(): void {
     if (!isset($_SESSION['user_id'])) {
         $_SESSION['_flash']['error'] = 'Debés iniciar sesión primero.';
-        header('Location: /login');
+        header('Location: ' . BASE_URL . '/login');
         exit;
     }
 }

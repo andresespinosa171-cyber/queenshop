@@ -1,13 +1,13 @@
 <div class="row justify-content-center">
     <div class="col-12 col-lg-8">
         <div class="d-flex align-items-center gap-2 mb-3">
-            <a href="/products" class="btn btn-outline-secondary btn-sm">
+            <a href="<?= BASE_URL ?>/products" class="btn btn-outline-secondary btn-sm">
                 <i class="bi bi-arrow-left"></i>
             </a>
             <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Nuevo Producto</h4>
         </div>
 
-        <form method="POST" action="/products/store" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <form method="POST" action="<?= BASE_URL ?>/products/store" enctype="multipart/form-data" class="needs-validation" novalidate>
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <!-- Name -->

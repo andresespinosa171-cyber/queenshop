@@ -8,6 +8,9 @@
 
 session_start();
 
+// Base URL detectada automáticamente (anda en subcarpeta y en raíz)
+define('BASE_URL', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/'));
+
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/app/core/Router.php';
 require_once __DIR__ . '/app/core/Controller.php';

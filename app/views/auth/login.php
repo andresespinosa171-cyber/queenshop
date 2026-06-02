@@ -12,7 +12,7 @@
                 <h4 class="fw-bold mb-1">QueenShop</h4>
                 <p class="text-muted small mb-4">Iniciá sesión para continuar</p>
 
-                <form method="POST" action="/login" class="text-start">
+                <form method="POST" action="<?= BASE_URL ?>/login" class="text-start">
                     <div class="mb-3">
                         <label class="form-label small fw-medium">Usuario</label>
                         <input type="text" name="username" class="form-control form-control-lg" placeholder="Tu usuario" required autofocus>
@@ -29,7 +29,7 @@
                 <hr class="my-4">
                 <p class="small text-muted mb-0">
                     ¿No tenés cuenta?
-                    <a href="/register" class="fw-medium text-decoration-none">Crear una</a>
+                    <a href="<?= BASE_URL ?>/register" class="fw-medium text-decoration-none">Crear una</a>
                 </p>
             </div>
         </div>
