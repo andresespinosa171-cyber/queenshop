@@ -16,3 +16,6 @@ Thumbs.db
 # Logs
 *.log
 /tmp/
+
+# MySQL credentials (producción)
+config/db.mysql.php

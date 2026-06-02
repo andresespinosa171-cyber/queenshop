@@ -2,6 +2,36 @@
 
 class Sale extends Model {
     protected string $table = 'sales';
+    private ?string $dbDriver = null;
+
+    private function isMySQL(): bool {
+        if ($this->dbDriver === null) {
+            $this->dbDriver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
+        }
+        return $this->dbDriver === 'mysql';
+    }
+
+    private function sqlNow(): string {
+        return $this->isMySQL() ? 'CURDATE()' : "DATE('now')";
+    }
+
+    private function sqlSubDays(): string {
+        return $this->isMySQL()
+            ? 'DATE_SUB(CURDATE(), INTERVAL ? DAY)'
+            : "DATE('now', '-' || ? || ' days')";
+    }
+
+    private function sqlMonth(): string {
+        return $this->isMySQL()
+            ? "DATE_FORMAT(s.created_at, '%m')"
+            : "strftime('%m', s.created_at)";
+    }
+
+    private function sqlYear(): string {
+        return $this->isMySQL()
+            ? "DATE_FORMAT(s.created_at, '%Y')"
+            : "strftime('%Y', s.created_at)";
+    }
 
     public function getAll(array $filters = [], ?int $companyId = null): array {
         $sql = "SELECT s.* FROM sales s WHERE 1=1";
@@ -96,7 +126,8 @@ class Sale extends Model {
     // ─── Dashboard Stats ────────────────────────────────────────────
 
     public function getTodaySales(?int $companyId = null, ?bool $fortnightOnly = false): float {
-        $sql = "SELECT COALESCE(SUM(s.final_total), 0) AS total FROM sales s WHERE DATE(s.created_at) = DATE('now')";
+        $now = $this->sqlNow();
+        $sql = "SELECT COALESCE(SUM(s.final_total), 0) AS total FROM sales s WHERE DATE(s.created_at) = {$now}";
         $params = [];
 
         if ($companyId !== null) {
@@ -183,7 +214,8 @@ class Sale extends Model {
             $params[] = $companyId;
         }
 
-        $sql .= " WHERE DATE(s.created_at) = DATE('now')";
+        $now = $this->sqlNow();
+        $sql .= " WHERE DATE(s.created_at) = {$now}";
 
         if ($fortnightOnly) {
             $range = current_fortnight_range();
@@ -271,12 +303,13 @@ class Sale extends Model {
     }
 
     public function getSalesByDay(int $days = 30, ?int $companyId = null, ?bool $fortnightOnly = false): array {
+        $since = $this->sqlSubDays();
         $sql = "SELECT DATE(s.created_at) AS day,
                        COUNT(*) AS sale_count,
                        COALESCE(SUM(s.final_total), 0) AS total,
                        COALESCE(SUM(s.discount_amount), 0) AS discounts
                 FROM sales s
-                WHERE s.created_at >= DATE('now', '-' || ? || ' days')";
+                WHERE s.created_at >= {$since}";
         $params = [$days];
 
         if ($companyId !== null) {
@@ -303,15 +336,17 @@ class Sale extends Model {
         $year = $year ?? date('Y');
         $monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
+        $monthExpr = $this->sqlMonth();
+        $yearExpr = $this->sqlYear();
         $sql = "SELECT
-                    strftime('%m', s.created_at) AS month,
+                    {$monthExpr} AS month,
                     COUNT(*) AS sale_count,
                     COALESCE(SUM(s.final_total), 0) AS total_sales,
                     COALESCE(SUM(s.discount_amount), 0) AS total_discounts,
                     COALESCE(SUM(si.purchase_price * si.quantity), 0) AS total_cost
                 FROM sales s
                 LEFT JOIN sale_items si ON si.sale_id = s.id
-                WHERE strftime('%Y', s.created_at) = ?";
+                WHERE {$yearExpr} = ?";
         $params = [$year];
 
         if ($companyId !== null) {
@@ -319,7 +354,7 @@ class Sale extends Model {
             $params[] = $companyId;
         }
 
-        $sql .= " GROUP BY strftime('%m', s.created_at) ORDER BY month ASC";
+        $sql .= " GROUP BY " . $this->sqlMonth() . " ORDER BY month ASC";
 
         $rows = $this->query($sql, $params)->fetchAll();
 

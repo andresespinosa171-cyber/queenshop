@@ -1,0 +1,18 @@
+<?php
+/**
+ * Configuración MySQL para producción (InfinityFree).
+ *
+ * Instrucciones:
+ * 1. Copiar este archivo como db.mysql.php en el mismo directorio
+ * 2. Reemplazar los valores con las credenciales del panel de InfinityFree
+ * 3. No incluir db.mysql.php en el repositorio (contiene credenciales)
+ *
+ * Para obtener las credenciales:
+ * - InfinityFree panel → MySQL Databases → Details
+ */
+return [
+    'host' => 'mysql.infinityfree.com',
+    'name' => 'if0_XXXXXX_queenshop',
+    'user' => 'if0_XXXXXX',
+    'pass' => 'tu-contraseña-aqui',
+];
