@@ -1,11 +1,74 @@
 'use strict';
 
-/* ─── Format currency (COP: sin decimales, punto como separador de miles) ─ */
-function formatCOP(amount) {
+/* ─── Format helpers (COP: punto miles, coma decimal) ─────────── */
+function formatNumber(amount) {
     var parts = Number(amount).toFixed(2).split('.');
     var intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return '$' + intPart + ',' + parts[1];
+    return intPart + ',' + parts[1];
 }
+
+function formatCOP(amount) {
+    return '$' + formatNumber(amount);
+}
+
+function parseCOP(str) {
+    if (!str || str === '') return 0;
+    var clean = ('' + str).replace(/\$/g, '').replace(/\./g, '').replace(',', '.');
+    return parseFloat(clean) || 0;
+}
+
+/* ─── Price Input Mask (formateo en vivo al escribir) ─────────── */
+document.addEventListener('input', function (e) {
+    if (e.target.matches('.price-mask')) {
+        maskPriceInput(e.target);
+    }
+});
+
+document.addEventListener('blur', function (e) {
+    if (e.target.matches('.price-mask')) {
+        maskPriceInput(e.target);
+    }
+}, true);
+
+function maskPriceInput(input) {
+    var val = input.value;
+    var pos = input.selectionStart;
+    var len = val.length;
+
+    // Strip any non-digit, non-comma chars (except $ at the very start)
+    val = val.replace(/[^\d,]/g, '');
+
+    // Split on comma
+    var parts = val.split(',');
+    if (parts.length > 2) return; // multiple commas, abort
+
+    var intPart = parts[0];
+    if (intPart.length > 0) {
+        // Remove leading zeros (but keep a single zero for "0.xx")
+        intPart = intPart.replace(/^0+(?=\d)/, '');
+        // Thousands dots
+        intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    var formatted = intPart;
+    if (parts.length === 2) {
+        formatted += ',' + parts[1].slice(0, 2);
+    }
+
+    if (formatted !== input.value) {
+        input.value = formatted;
+        // Try to keep cursor near where it was
+        var delta = input.value.length - len;
+        try { input.setSelectionRange(pos + delta, pos + delta); } catch (e) {}
+    }
+}
+
+/* ─── Clean price-mask values before any form submit ──────────── */
+document.addEventListener('submit', function (e) {
+    e.target.querySelectorAll('.price-mask').forEach(function (input) {
+        input.value = parseCOP(input.value).toFixed(2);
+    });
+});
 
 /* ─── Image Preview ──────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function () {
@@ -178,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function () {
             qtyInput.value = item.quantity;
 
             const priceInput = tr.querySelector('.price-input');
-            priceInput.value = Math.round(item.unit_price);
+            priceInput.value = formatNumber(item.unit_price);
 
             const subtotalCell = tr.querySelector('.subtotal-cell');
             subtotalCell.textContent = formatCOP(item.subtotal);
@@ -192,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             priceInput.addEventListener('input', function () {
-                let price = parseFloat(this.value) || 0;
+                let price = parseCOP(this.value);
                 if (price < 0) price = 0;
                 updateItem(index, parseInt(qtyInput.value) || 1, price);
             });

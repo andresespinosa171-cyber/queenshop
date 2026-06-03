@@ -22,8 +22,8 @@ function format_currency(float $amount): string {
     return '$' . number_format($amount, 2, ',', '.');
 }
 
-function asset(string $path): string {
-    return $path;
+function format_number(float $amount): string {
+    return number_format($amount, 2, ',', '.');
 }
 
 function image_url(?string $path): string {

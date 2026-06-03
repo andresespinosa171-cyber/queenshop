@@ -39,8 +39,8 @@ class ProductController extends Controller {
     public function store(): void {
         $name        = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
-        $purchase    = (float) ($_POST['purchase_price'] ?? 0);
-        $sale        = (float) ($_POST['sale_price'] ?? 0);
+        $purchase    = self::parseCOP($_POST['purchase_price'] ?? 0);
+        $sale        = self::parseCOP($_POST['sale_price'] ?? 0);
         $stock       = (int) ($_POST['stock'] ?? 0);
         $categoryId  = !empty($_POST['category_id']) ? (int) $_POST['category_id'] : null;
 
@@ -97,8 +97,8 @@ class ProductController extends Controller {
 
         $name        = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
-        $purchase    = (float) ($_POST['purchase_price'] ?? 0);
-        $sale        = (float) ($_POST['sale_price'] ?? 0);
+        $purchase    = self::parseCOP($_POST['purchase_price'] ?? 0);
+        $sale        = self::parseCOP($_POST['sale_price'] ?? 0);
         $stock       = (int) ($_POST['stock'] ?? 0);
         $categoryId  = !empty($_POST['category_id']) ? (int) $_POST['category_id'] : null;
 
@@ -168,6 +168,14 @@ class ProductController extends Controller {
         $search = $_GET['q'] ?? '';
         $products = $this->product->apiSearch($search, current_company_id());
         $this->json($products);
+    }
+
+    private static function parseCOP(mixed $value): float {
+        $str = (string) $value;
+        $str = str_replace(['$', ' '], '', $str);
+        $str = str_replace('.', '', $str);
+        $str = str_replace(',', '.', $str);
+        return (float) $str;
     }
 
     private function uploadImage(array $file): string {

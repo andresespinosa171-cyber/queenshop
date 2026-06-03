@@ -174,7 +174,6 @@ class Sale extends Model {
                 FROM sale_items si
                 JOIN sales s ON si.sale_id = s.id";
         $params = [];
-        $hasWhere = false;
 
         if ($companyId !== null) {
             $sql .= " AND s.company_id = ?";
@@ -184,8 +183,6 @@ class Sale extends Model {
         if ($fortnightOnly) {
             $range = current_fortnight_range();
             $sql .= " WHERE 1=1";
-            $hasWhere = true;
-            // Re-add company_id as WHERE clause if set (moved from JOIN AND)
             if ($companyId !== null) {
                 $sql .= " AND s.company_id = ?";
                 $params[] = $companyId;
@@ -338,49 +335,74 @@ class Sale extends Model {
 
         $monthExpr = $this->sqlMonth();
         $yearExpr = $this->sqlYear();
+
+        // Sale totals per month (no JOIN with items to avoid row multiplication)
         $sql = "SELECT
                     {$monthExpr} AS month,
                     COUNT(*) AS sale_count,
                     COALESCE(SUM(s.final_total), 0) AS total_sales,
-                    COALESCE(SUM(s.discount_amount), 0) AS total_discounts,
-                    COALESCE(SUM(si.purchase_price * si.quantity), 0) AS total_cost
+                    COALESCE(SUM(s.discount_amount), 0) AS total_discounts
                 FROM sales s
-                LEFT JOIN sale_items si ON si.sale_id = s.id
                 WHERE {$yearExpr} = ?";
         $params = [$year];
-
         if ($companyId !== null) {
             $sql .= " AND s.company_id = ?";
             $params[] = $companyId;
         }
+        $sql .= " GROUP BY {$monthExpr} ORDER BY month ASC";
+        $saleRows = $this->query($sql, $params)->fetchAll();
 
-        $sql .= " GROUP BY " . $this->sqlMonth() . " ORDER BY month ASC";
+        // Costs per month (separate query avoids duplication)
+        $costSql = "SELECT
+                        {$monthExpr} AS month,
+                        COALESCE(SUM(si.purchase_price * si.quantity), 0) AS total_cost
+                    FROM sales s
+                    JOIN sale_items si ON si.sale_id = s.id
+                    WHERE {$yearExpr} = ?";
+        $costParams = [$year];
+        if ($companyId !== null) {
+            $costSql .= " AND s.company_id = ?";
+            $costParams[] = $companyId;
+        }
+        $costSql .= " GROUP BY {$monthExpr} ORDER BY month ASC";
+        $costRows = $this->query($costSql, $costParams)->fetchAll();
 
-        $rows = $this->query($sql, $params)->fetchAll();
+        // Index costs by month for fast lookup
+        $costMap = [];
+        foreach ($costRows as $cr) {
+            $costMap[$cr['month']] = (float) $cr['total_cost'];
+        }
 
-        // Ensure all 12 months are present
+        // Merge and ensure all 12 months are present
         $result = [];
         for ($m = 1; $m <= 12; $m++) {
             $monthKey = sprintf('%02d', $m);
             $found = false;
-            foreach ($rows as $row) {
+            foreach ($saleRows as $row) {
                 if ($row['month'] === $monthKey) {
-                    $row['month_name'] = $monthNames[$m - 1];
-                    $row['gross_profit'] = (float)$row['total_sales'] - (float)$row['total_cost'];
-                    $result[] = $row;
+                    $cost = $costMap[$monthKey] ?? 0;
+                    $result[] = [
+                        'month'           => $monthKey,
+                        'month_name'      => $monthNames[$m - 1],
+                        'sale_count'      => (int) $row['sale_count'],
+                        'total_sales'     => (float) $row['total_sales'],
+                        'total_discounts' => (float) $row['total_discounts'],
+                        'total_cost'      => $cost,
+                        'gross_profit'    => (float) $row['total_sales'] - $cost,
+                    ];
                     $found = true;
                     break;
                 }
             }
             if (!$found) {
                 $result[] = [
-                    'month' => $monthKey,
-                    'month_name' => $monthNames[$m - 1],
-                    'sale_count' => 0,
-                    'total_sales' => 0,
+                    'month'           => $monthKey,
+                    'month_name'      => $monthNames[$m - 1],
+                    'sale_count'      => 0,
+                    'total_sales'     => 0,
                     'total_discounts' => 0,
-                    'total_cost' => 0,
-                    'gross_profit' => 0,
+                    'total_cost'      => 0,
+                    'gross_profit'    => 0,
                 ];
             }
         }

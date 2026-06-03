@@ -29,8 +29,8 @@
                             <label class="form-label fw-medium">Precio compra</label>
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
-                                <input type="number" name="purchase_price" class="form-control"
-                                       step="0.01" min="0" value="<?= $product['purchase_price'] ?>" required>
+                                <input type="text" name="purchase_price" class="form-control price-mask"
+                                       value="<?= format_number((float) $product['purchase_price']) ?>" required>
                             </div>
                         </div>
 
@@ -39,8 +39,8 @@
                             <label class="form-label fw-medium">Precio venta</label>
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
-                                <input type="number" name="sale_price" class="form-control"
-                                       step="0.01" min="0" value="<?= $product['sale_price'] ?>" required>
+                                <input type="text" name="sale_price" class="form-control price-mask"
+                                       value="<?= format_number((float) $product['sale_price']) ?>" required>
                             </div>
                         </div>
 

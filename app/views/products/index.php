@@ -128,7 +128,7 @@
                                     <i class="bi bi-plus-circle"></i>
                                 </button>
                                 <form method="POST" action="<?= BASE_URL ?>/products/delete/<?= $p['id'] ?>"
-                                      onsubmit="return confirm('¿Eliminar <?= htmlspecialchars($p['name'], ENT_QUOTES) ?>?')">
+                                      onsubmit="return confirm(<?= htmlspecialchars(json_encode('¿Eliminar ' . $p['name'] . '?'), ENT_QUOTES) ?>)">
                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
                                         <i class="bi bi-trash"></i>
                                     </button>

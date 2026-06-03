@@ -30,8 +30,8 @@
                             <label class="form-label fw-medium">Precio compra</label>
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
-                                <input type="number" name="purchase_price" class="form-control"
-                                       step="0.01" min="0" value="0.00" required>
+                                <input type="text" name="purchase_price" class="form-control price-mask"
+                                       value="0,00" required>
                             </div>
                         </div>
 
@@ -40,8 +40,8 @@
                             <label class="form-label fw-medium">Precio venta</label>
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
-                                <input type="number" name="sale_price" class="form-control"
-                                       step="0.01" min="0" value="0.00" required>
+                                <input type="text" name="sale_price" class="form-control price-mask"
+                                       value="0,00" required>
                             </div>
                         </div>
 

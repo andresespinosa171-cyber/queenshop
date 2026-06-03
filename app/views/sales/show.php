@@ -30,10 +30,8 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($item['product_image'])): ?>
-                                                <img src="<?= image_url($item['product_image']) ?>"
-                                                     class="rounded border" style="width:36px;height:36px;object-fit:cover;">
-                                            <?php endif; ?>
+                                            <img src="<?= image_url($item['product_image'] ?? null) ?>"
+                                                 class="rounded border" style="width:36px;height:36px;object-fit:cover;">
                                             <span class="fw-medium"><?= htmlspecialchars($item['product_name']) ?></span>
                                         </div>
                                     </td>
