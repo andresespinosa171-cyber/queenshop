@@ -2,8 +2,9 @@
 
 /* ─── Format currency (COP: sin decimales, punto como separador de miles) ─ */
 function formatCOP(amount) {
-    var n = Math.round(Number(amount) || 0);
-    return '$' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    var parts = Number(amount).toFixed(2).split('.');
+    var intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return '$' + intPart + ',' + parts[1];
 }
 
 /* ─── Image Preview ──────────────────────────────────────────── */

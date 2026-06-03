@@ -19,7 +19,7 @@ function session_get(string $key): string {
 }
 
 function format_currency(float $amount): string {
-    return '$' . number_format($amount, 0, ',', '.');
+    return '$' . number_format($amount, 2, ',', '.');
 }
 
 function asset(string $path): string {
