@@ -74,7 +74,7 @@
     <div class="text-center py-5 text-muted">
         <i class="bi bi-inbox fs-1 d-block mb-2"></i>
         <p>No hay productos todavía.</p>
-        <a href="/products/create" class="btn btn-success btn-sm">
+        <a href="<?= BASE_URL ?>/products/create" class="btn btn-success btn-sm">
             <i class="bi bi-plus-lg"></i> Crear primer producto
         </a>
     </div>
@@ -114,7 +114,7 @@
                         <td class="text-end <?= $profitClass ?>"><?= format_currency($profit) ?></td>
                         <td>
                             <div class="d-flex gap-1 justify-content-end">
-                                <a href="/products/edit/<?= $p['id'] ?>"
+                                <a href="<?= BASE_URL ?>/products/edit/<?= $p['id'] ?>"
                                    class="btn btn-sm btn-outline-secondary"
                                    title="Editar">
                                     <i class="bi bi-pencil"></i>
@@ -127,7 +127,7 @@
                                         data-name="<?= htmlspecialchars($p['name']) ?>">
                                     <i class="bi bi-plus-circle"></i>
                                 </button>
-                                <form method="POST" action="/products/delete/<?= $p['id'] ?>"
+                                <form method="POST" action="<?= BASE_URL ?>/products/delete/<?= $p['id'] ?>"
                                       onsubmit="return confirm('¿Eliminar <?= htmlspecialchars($p['name'], ENT_QUOTES) ?>?')">
                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
                                         <i class="bi bi-trash"></i>

@@ -71,7 +71,7 @@
                         <label class="form-label fw-medium">Imagen del producto</label>
                         <?php if ($product['image']): ?>
                             <div class="mb-2">
-                                <img src="<?= htmlspecialchars($product['image']) ?>"
+                                <img src="<?= BASE_URL ?>/<?= ltrim(htmlspecialchars($product['image']), '/') ?>"
                                      class="rounded border" style="max-width:100px;max-height:100px;object-fit:cover;">
                                 <div class="form-text">Imagen actual. Subí una nueva para reemplazarla.</div>
                             </div>
@@ -80,7 +80,7 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent d-flex justify-content-end gap-2">
-                    <a href="/products" class="btn btn-light">Cancelar</a>
+                    <a href="<?= BASE_URL ?>/products" class="btn btn-light">Cancelar</a>
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check-lg"></i> Actualizar Producto
                     </button>

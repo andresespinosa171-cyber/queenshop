@@ -34,7 +34,7 @@
     <div class="text-center py-5 text-muted">
         <i class="bi bi-receipt fs-1 d-block mb-2"></i>
         <p>No hay ventas registradas.</p>
-        <a href="/sales/create" class="btn btn-success btn-sm">
+        <a href="<?= BASE_URL ?>/sales/create" class="btn btn-success btn-sm">
             <i class="bi bi-plus-lg"></i> Registrar primera venta
         </a>
     </div>
@@ -64,7 +64,7 @@
                         </td>
                         <td class="text-end fw-bold"><?= format_currency($s['final_total']) ?></td>
                         <td>
-                            <a href="/sales/<?= $s['id'] ?>" class="btn btn-sm btn-outline-secondary"
+                            <a href="<?= BASE_URL ?>/sales/<?= $s['id'] ?>" class="btn btn-sm btn-outline-secondary"
                                title="Ver detalle">
                                 <i class="bi bi-eye"></i>
                             </a>

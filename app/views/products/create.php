@@ -77,7 +77,7 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent d-flex justify-content-end gap-2">
-                    <a href="/products" class="btn btn-light">Cancelar</a>
+                    <a href="<?= BASE_URL ?>/products" class="btn btn-light">Cancelar</a>
                     <button type="submit" class="btn btn-success">
                         <i class="bi bi-check-lg"></i> Guardar Producto
                     </button>

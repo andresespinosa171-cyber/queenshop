@@ -1,5 +1,11 @@
 'use strict';
 
+/* ─── Format currency (COP: sin decimales, punto como separador de miles) ─ */
+function formatCOP(amount) {
+    var n = Math.round(Number(amount) || 0);
+    return '$' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
 /* ─── Image Preview ──────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function () {
     const imgInput = document.querySelector('input[type="file"][name="image"]');
@@ -31,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const name = btn.dataset.name;
             this.querySelector('.modal-title').textContent = 'Agregar Stock: ' + name;
             this.querySelector('#restockProductName').textContent = 'Producto: ' + name;
-            this.querySelector('form').action = '/products/restock/' + id;
+            this.querySelector('form').action = BASE_URL + '/products/restock/' + id;
         });
     }
 });
@@ -79,84 +85,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (q.length >= 1 || currentCategory) {
                 fetchProducts(q, currentCategory);
             }
+        });
     });
-});
-
-/* ─── Accounting Chart ───────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', function () {
-    const canvas = document.getElementById('accountingChart');
-    if (!canvas || typeof accountingLabels === 'undefined') return;
-
-    new Chart(canvas, {
-        type: 'bar',
-        data: {
-            labels: accountingLabels,
-            datasets: [{
-                label: 'Ventas',
-                data: accountingSales,
-                backgroundColor: 'rgba(255, 193, 7, 0.7)',
-                borderColor: 'rgba(255, 193, 7, 1)',
-                borderWidth: 1,
-                borderRadius: 4,
-                order: 1
-            }, {
-                label: 'Ganancia',
-                data: accountingProfit,
-                backgroundColor: 'rgba(25, 135, 84, 0.6)',
-                borderColor: 'rgba(25, 135, 84, 1)',
-                borderWidth: 1,
-                borderRadius: 4,
-                order: 2
-            }, {
-                label: 'Costo',
-                data: accountingCosts,
-                backgroundColor: 'rgba(220, 53, 69, 0.5)',
-                borderColor: 'rgba(220, 53, 69, 1)',
-                borderWidth: 1,
-                borderRadius: 4,
-                order: 3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false
-            },
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        boxWidth: 12,
-                        padding: 12,
-                        font: { size: 12 }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function (value) {
-                            return '$' + value.toFixed(0);
-                        }
-                    },
-                    grid: {
-                        color: 'rgba(0,0,0,0.05)'
-                    }
-                },
-                x: {
-                    grid: { display: false }
-                }
-            }
-        }
-    });
-});
 
     function fetchProducts(q, cat) {
         cat = cat || currentCategory;
-        let url = '/api/products?q=' + encodeURIComponent(q);
+        let url = BASE_URL + '/api/products?q=' + encodeURIComponent(q);
         if (cat) url += '&category_id=' + encodeURIComponent(cat);
 
         fetch(url)
@@ -175,9 +109,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         return c.product_id === p.id;
                     });
 
+                    const imgSrc = p.image
+                        ? BASE_URL + '/' + p.image.replace(/^\//, '')
+                        : BASE_URL + '/assets/img/no-image.svg';
+                    const noImg = BASE_URL + '/assets/img/no-image.svg';
+
                     const div = document.createElement('div');
                     div.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center' + (inCart ? ' disabled' : '');
-                    div.innerHTML = '<div class="d-flex align-items-center gap-2"><img src="' + (p.image || '/assets/img/no-image.svg') + '" class="rounded border" style="width:36px;height:36px;object-fit:cover;" onerror="this.src=\'/assets/img/no-image.svg\'"><div><strong>' + p.name + '</strong><br><small class="text-muted">$' + parseFloat(p.sale_price).toFixed(2) + ' | Stock: ' + p.stock + '</small></div></div>';
+                    div.innerHTML = '<div class="d-flex align-items-center gap-2"><img src="' + imgSrc + '" class="rounded border" style="width:36px;height:36px;object-fit:cover;" onerror="this.src=\'' + noImg + '\'"><div><strong>' + p.name + '</strong><br><small class="text-muted">' + formatCOP(p.sale_price) + ' | Stock: ' + p.stock + '</small></div></div>';
 
                     if (!inCart) {
                         div.addEventListener('click', function () {
@@ -238,10 +177,10 @@ document.addEventListener('DOMContentLoaded', function () {
             qtyInput.value = item.quantity;
 
             const priceInput = tr.querySelector('.price-input');
-            priceInput.value = item.unit_price.toFixed(2);
+            priceInput.value = Math.round(item.unit_price);
 
             const subtotalCell = tr.querySelector('.subtotal-cell');
-            subtotalCell.textContent = '$' + item.subtotal.toFixed(2);
+            subtotalCell.textContent = formatCOP(item.subtotal);
 
             // Events
             qtyInput.addEventListener('input', function () {
@@ -281,15 +220,14 @@ document.addEventListener('DOMContentLoaded', function () {
         cart.forEach(function (item) {
             subtotal += item.subtotal;
         });
-        subtotal = parseFloat(subtotal.toFixed(2));
 
         const discPct = parseFloat(discountPercent.value) || 0;
-        const discAmount = parseFloat((subtotal * (discPct / 100)).toFixed(2));
-        const finalTotal = parseFloat(Math.max(0, subtotal - discAmount).toFixed(2));
+        const discAmount = subtotal * (discPct / 100);
+        const finalTotal = Math.max(0, subtotal - discAmount);
 
-        subtotalDisplay.textContent = '$' + subtotal.toFixed(2);
-        discountDisplay.textContent = '-$' + discAmount.toFixed(2);
-        finalTotalDisplay.textContent = '$' + finalTotal.toFixed(2);
+        subtotalDisplay.textContent = formatCOP(subtotal);
+        discountDisplay.textContent = '-' + formatCOP(discAmount);
+        finalTotalDisplay.textContent = formatCOP(finalTotal);
 
         cartCount.textContent = cart.reduce(function (acc, item) { return acc + item.quantity; }, 0);
         completeBtn.disabled = cart.length === 0 || finalTotal <= 0;
@@ -308,11 +246,10 @@ document.addEventListener('DOMContentLoaded', function () {
         cart.forEach(function (item) {
             subtotal += item.subtotal;
         });
-        subtotal = parseFloat(subtotal.toFixed(2));
 
         const discPct = parseFloat(discountPercent.value) || 0;
-        const discAmount = parseFloat((subtotal * (discPct / 100)).toFixed(2));
-        const finalTotal = parseFloat(Math.max(0, subtotal - discAmount).toFixed(2));
+        const discAmount = subtotal * (discPct / 100);
+        const finalTotal = Math.max(0, subtotal - discAmount);
 
         document.getElementById('itemsInput').value = JSON.stringify(cart);
         document.getElementById('totalInput').value = subtotal;
@@ -343,7 +280,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const labels = [];
     const totals = [];
-    const costs = [];
 
     salesData.forEach(function (d) {
         const dateParts = d.day.split('-');
@@ -375,7 +311,79 @@ document.addEventListener('DOMContentLoaded', function () {
                     beginAtZero: true,
                     ticks: {
                         callback: function (value) {
-                            return '$' + value.toFixed(0);
+                            return formatCOP(value);
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+});
+
+/* ─── Accounting Chart ───────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function () {
+    const canvas = document.getElementById('accountingChart');
+    if (!canvas || typeof accountingLabels === 'undefined') return;
+
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: accountingLabels,
+            datasets: [{
+                label: 'Ventas',
+                data: accountingSales,
+                backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                borderColor: 'rgba(255, 193, 7, 1)',
+                borderWidth: 1,
+                borderRadius: 4,
+                order: 1
+            }, {
+                label: 'Ganancia',
+                data: accountingProfit,
+                backgroundColor: 'rgba(25, 135, 84, 0.6)',
+                borderColor: 'rgba(25, 135, 84, 1)',
+                borderWidth: 1,
+                borderRadius: 4,
+                order: 2
+            }, {
+                label: 'Costo',
+                data: accountingCosts,
+                backgroundColor: 'rgba(220, 53, 69, 0.5)',
+                borderColor: 'rgba(220, 53, 69, 1)',
+                borderWidth: 1,
+                borderRadius: 4,
+                order: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 12,
+                        font: { size: 12 }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function (value) {
+                            return formatCOP(value);
                         }
                     },
                     grid: {

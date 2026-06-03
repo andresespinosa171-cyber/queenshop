@@ -31,7 +31,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['product_image'])): ?>
-                                                <img src="<?= htmlspecialchars($item['product_image']) ?>"
+                                                <img src="<?= BASE_URL ?>/<?= ltrim(htmlspecialchars($item['product_image']), '/') ?>"
                                                      class="rounded border" style="width:36px;height:36px;object-fit:cover;">
                                             <?php endif; ?>
                                             <span class="fw-medium"><?= htmlspecialchars($item['product_name']) ?></span>

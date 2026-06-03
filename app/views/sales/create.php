@@ -89,7 +89,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Subtotal:</span>
-                                <span class="fw-bold" id="subtotalDisplay">$0.00</span>
+                                <span class="fw-bold" id="subtotalDisplay">$0</span>
                             </div>
                             <div class="row g-2 mb-2">
                                 <div class="col-8">
@@ -102,12 +102,12 @@
                             </div>
                             <div class="d-flex justify-content-between mb-2 text-danger">
                                 <span>Descuento:</span>
-                                <span id="discountDisplay">-$0.00</span>
+                                <span id="discountDisplay">-$0</span>
                             </div>
                             <hr>
                             <div class="d-flex justify-content-between fs-5">
                                 <span class="fw-bold">Total:</span>
-                                <span class="fw-bold text-success" id="finalTotalDisplay">$0.00</span>
+                                <span class="fw-bold text-success" id="finalTotalDisplay">$0</span>
                             </div>
                             <button type="submit" class="btn btn-success w-100 mt-3" id="completeSaleBtn" disabled>
                                 <i class="bi bi-check2-circle"></i> Completar Venta
@@ -137,7 +137,7 @@
                 <input type="number" class="form-control form-control-sm price-input" min="0" step="0.01">
             </div>
         </td>
-        <td class="text-end fw-medium subtotal-cell">$0.00</td>
+        <td class="text-end fw-medium subtotal-cell">$0</td>
         <td>
             <button type="button" class="btn btn-sm btn-outline-danger remove-btn">
                 <i class="bi bi-x"></i>

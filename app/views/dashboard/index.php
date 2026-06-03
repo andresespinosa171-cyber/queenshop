@@ -120,7 +120,7 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
                 <span class="fw-medium"><i class="bi bi-exclamation-triangle"></i> Alertas de Stock</span>
-                <a href="/products?stock=low" class="btn btn-sm btn-outline-warning">Ver todo</a>
+                <a href="<?= BASE_URL ?>/products?stock=low" class="btn btn-sm btn-outline-warning">Ver todo</a>
             </div>
             <div class="card-body p-0">
                 <?php if (empty($lowStock) && empty($outOfStock)): ?>
@@ -136,7 +136,7 @@
                                     <small class="fw-medium"><?= htmlspecialchars($p['name']) ?></small>
                                     <br><small class="text-danger">Sin stock</small>
                                 </div>
-                                <a href="/products/edit/<?= $p['id'] ?>"
+                                <a href="<?= BASE_URL ?>/products/edit/<?= $p['id'] ?>"
                                    class="btn btn-sm btn-outline-danger">
                                     <i class="bi bi-plus-circle"></i>
                                 </a>
@@ -148,7 +148,7 @@
                                     <small class="fw-medium"><?= htmlspecialchars($p['name']) ?></small>
                                     <br><small class="text-warning">Stock: <?= $p['stock'] ?></small>
                                 </div>
-                                <a href="/products/edit/<?= $p['id'] ?>"
+                                <a href="<?= BASE_URL ?>/products/edit/<?= $p['id'] ?>"
                                    class="btn btn-sm btn-outline-warning">
                                     <i class="bi bi-plus-circle"></i>
                                 </a>
@@ -194,7 +194,7 @@
                                 <td class="text-end"><?= format_currency($s['total']) ?></td>
                                 <td class="text-end text-danger"><?= $s['discount_percent'] ?>%</td>
                                 <td class="text-end fw-bold"><?= format_currency($s['final_total']) ?></td>
-                                <td><a href="/sales/<?= $s['id'] ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a></td>
+                                <td><a href="<?= BASE_URL ?>/sales/<?= $s['id'] ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

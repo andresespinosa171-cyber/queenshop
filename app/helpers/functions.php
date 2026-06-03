@@ -28,9 +28,9 @@ function asset(string $path): string {
 
 function image_url(?string $path): string {
     if ($path && file_exists(__DIR__ . '/../../' . $path)) {
-        return $path;
+        return BASE_URL . '/' . ltrim($path, '/');
     }
-    return '/assets/img/no-image.svg';
+    return BASE_URL . '/assets/img/no-image.svg';
 }
 
 function truncate(string $text, int $length = 50): string {
