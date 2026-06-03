@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- Fondo redondo amarillo -->
+  <rect width="200" height="200" rx="100" fill="#f59e0b"/>
+  <!-- Lobo (izquierda) y Gato (derecha) -->
+  <text x="72" y="130" text-anchor="middle" fill="#1f2937" font-size="80" font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, EmojiSymbols">🐺</text>
+  <text x="132" y="125" text-anchor="middle" fill="#1f2937" font-size="70" font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, EmojiSymbols">🐱</text>
+</svg>

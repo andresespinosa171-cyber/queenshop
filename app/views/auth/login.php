@@ -4,10 +4,8 @@
             <div class="card-body p-4 p-md-5 text-center">
                 <!-- Logo -->
                 <div class="mb-3">
-                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning"
-                          style="width: 64px; height: 64px;">
-                        <i class="bi bi-shop fs-2 text-dark"></i>
-                    </span>
+                    <img src="<?= BASE_URL ?>/assets/img/logo.svg" alt="QueenShop"
+                         width="80" height="80">
                 </div>
                 <h4 class="fw-bold mb-1">QueenShop</h4>
                 <p class="text-muted small mb-4">Iniciá sesión para continuar</p>
