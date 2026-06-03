@@ -246,18 +246,46 @@ document.addEventListener('DOMContentLoaded', function () {
             const subtotalCell = tr.querySelector('.subtotal-cell');
             subtotalCell.textContent = formatCOP(item.subtotal);
 
-            // Events
+            // ─── Quantity: update model + subtotal inline, don't re-render ──
             qtyInput.addEventListener('input', function () {
+                let qty = parseInt(this.value);
+                if (!isNaN(qty) && qty >= 0) {
+                    cart[index].quantity = qty;
+                    cart[index].subtotal = qty * cart[index].unit_price;
+                    subtotalCell.textContent = formatCOP(cart[index].subtotal);
+                    updateTotals();
+                }
+            });
+            qtyInput.addEventListener('blur', function () {
                 let qty = parseInt(this.value) || 1;
                 if (qty < 1) qty = 1;
                 this.value = qty;
-                updateItem(index, qty, parseFloat(priceInput.value) || 0);
+                cart[index].quantity = qty;
+                cart[index].subtotal = qty * cart[index].unit_price;
+                subtotalCell.textContent = formatCOP(cart[index].subtotal);
+                updateTotals();
             });
 
+            // ─── Price: free typing on input, format on blur ──────────────
             priceInput.addEventListener('input', function () {
-                let price = parseCOP(this.value);
-                if (price < 0) price = 0;
-                updateItem(index, parseInt(qtyInput.value) || 1, price);
+                let val = this.value.replace(/\./g, '').replace(',', '.');
+                let price = parseFloat(val);
+                if (!isNaN(price) && price >= 0) {
+                    cart[index].unit_price = price;
+                    cart[index].subtotal = price * cart[index].quantity;
+                    subtotalCell.textContent = formatCOP(cart[index].subtotal);
+                    updateTotals();
+                }
+            });
+            priceInput.addEventListener('blur', function () {
+                let val = this.value.replace(/\./g, '').replace(',', '.');
+                let price = parseFloat(val);
+                if (isNaN(price) || price < 0) price = 0;
+                this.value = formatNumber(price);
+                cart[index].unit_price = price;
+                cart[index].subtotal = price * cart[index].quantity;
+                subtotalCell.textContent = formatCOP(cart[index].subtotal);
+                updateTotals();
             });
 
             tr.querySelector('.remove-btn').addEventListener('click', function () {

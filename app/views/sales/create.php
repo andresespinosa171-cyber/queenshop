@@ -134,7 +134,7 @@
         <td>
             <div class="input-group input-group-sm">
                 <span class="input-group-text">$</span>
-                <input type="text" class="form-control form-control-sm price-input price-mask">
+                <input type="text" class="form-control form-control-sm price-input">
             </div>
         </td>
         <td class="text-end fw-medium subtotal-cell">$0,00</td>
