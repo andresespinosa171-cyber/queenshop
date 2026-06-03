@@ -173,12 +173,18 @@ class ProductController extends Controller {
     private static function parseCOP(mixed $value): float {
         $str = (string) $value;
         $str = str_replace(['$', ' '], '', $str);
-        $str = str_replace('.', '', $str);
-        $str = str_replace(',', '.', $str);
+
+        // Si tiene coma, es formato COP (1.234,56) -> saco puntos, coma va a punto
+        if (str_contains($str, ',')) {
+            $str = str_replace('.', '', $str);
+            $str = str_replace(',', '.', $str);
+        }
+        // Si no tiene coma, ya está en formato US (1234.56) -> lo dejamos como está
+
         return (float) $str;
     }
 
-    private function uploadImage(array $file): string {
+    private function uploadImage(array $file): ?string {
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
@@ -188,9 +194,20 @@ class ProductController extends Controller {
             exit;
         }
 
+        $uploadDir = __DIR__ . '/../../uploads';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
         $filename = uniqid('prod_') . '.' . $ext;
-        $dest = '/uploads/' . $filename;
-        move_uploaded_file($file['tmp_name'], __DIR__ . '/../../' . $dest);
-        return $dest;
+        $destPath = $uploadDir . '/' . $filename;
+
+        if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+            session_flash('error', 'Error al subir la imagen. Verificá que la carpeta uploads/ tenga permisos de escritura.');
+            $this->back();
+            exit;
+        }
+
+        return '/uploads/' . $filename;
     }
 }
