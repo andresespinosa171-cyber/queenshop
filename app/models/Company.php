@@ -12,13 +12,12 @@ class Company extends Model {
     }
 
     /**
-     * Get companies a user has access to (for future user_companies pivot).
+     * Get companies a user has access to via the user_companies pivot.
      */
     public function getByUser(int $userId): array {
         return $this->query(
-            "SELECT c.* FROM companies c
-             INNER JOIN users u ON u.company_id = c.id
-             WHERE u.id = ?
+            "SELECT c.*, uc.role AS access_role FROM companies c
+             INNER JOIN user_companies uc ON uc.company_id = c.id AND uc.user_id = ?
              ORDER BY c.name",
             [$userId]
         )->fetchAll();

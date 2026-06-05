@@ -48,43 +48,70 @@ QueenShop MVC — Sistema multi-empresa de gestión de tienda de mascotas.
 
 ```
 /project/workspace/
-├── index.php                     # Front controller + auth guard
+├── index.php                     # Front controller + auth guard + todas las rutas
+├── config/
+│   ├── database.php              # DB con fallback MySQL → SQLite + migraciones
+│   └── db.mysql.php              # Credenciales MySQL (infinityfree)
 ├── app/
 │   ├── controllers/
 │   │   ├── AuthController.php    # Login/register/logout
 │   │   ├── DashboardController.php # Dashboard con quincena default
 │   │   ├── AccountingController.php # Contabilidad mensual + cross-company
 │   │   ├── ProductController.php
-│   │   └── SaleController.php
+│   │   ├── SaleController.php
+│   │   ├── ClientController.php  # CRUD clientes + gestión de deudas
+│   │   ├── ReturnController.php  # Devoluciones con ajuste de stock
+│   │   └── SwitchController.php  # Cambio entre tiendas (multi-company)
 │   ├── models/
 │   │   ├── Product.php           # Scoping por company_id
-│   │   └── Sale.php              # Scoping + fortnight filter + monthly stats
+│   │   ├── Sale.php              # Scoping + fortnight filter + monthly stats
+│   │   ├── Client.php            # Clientes + deudas
+│   │   ├── Company.php           # Empresas + branding
+│   │   └── ReturnModel.php       # Devoluciones
 │   ├── helpers/
-│   │   ├── auth.php              # require_login, current_company_id, is_admin
-│   │   └── functions.php         # COP format, fortnight helpers
+│   │   ├── auth.php              # require_login, current_company_id, is_admin, store helpers
+│   │   └── functions.php         # COP format, fortnight helpers, session flash
 │   ├── core/
-│   │   ├── Router.php
+│   │   ├── Router.php            # Router con parámetros URL
 │   │   ├── Controller.php
 │   │   └── Model.php
 │   └── views/
 │       ├── auth/                 # Login, register, auth layout
 │       ├── dashboard/            # Dashboard con badge de quincena
 │       ├── accounting/           # Contabilidad con gráfico Chart.js
-│       ├── layouts/main.php      # Navbar + logout + navigation
+│       ├── layouts/main.php      # Navbar + store switcher + logout + lightbox
 │       ├── products/             # CRUD de productos
-│       └── sales/                # Ventas con carrito
+│       ├── sales/                # Ventas con carrito
+│       ├── clients/              # CRUD clientes + gestión de deuda
+│       ├── returns/              # Devoluciones (crear, listar, ver)
+│       └── switch/               # Error al cambiar de tienda
 ├── database/
-│   ├── schema.sql                # Schema completo + seed data
-│   └── petshop.db                # SQLite DB (se recrea al borrar)
+│   ├── schema.sql                # Schema MySQL completo + seed data
+│   ├── schema.sqlite.sql         # Schema SQLite completo + seed data
+│   └── petshop.db                # SQLite DB actual
 ├── assets/
-│   ├── css/style.css             # Tema amarillo/negro/blanco
-│   └── js/app.js                 # Chart.js initialization
-├── openspec/
-│   └── changes/queenshop-auth-company/  # SDD artifacts
-└── _AI_CONTEXT.md                # Este archivo
+│   ├── css/style.css             # Tema oscuro con soporte multi-store (WolfStor)
+│   ├── js/app.js                 # Chart.js + carrito + lightbox
+│   └── img/                      # Logos por tienda
+├── _AI_CONTEXT.md                # Este archivo
 ```
 
 ---
+
+## Estado actual del sitio (Junio 2026)
+
+- ✅ **Login/Register** — Funcionando, centrado vertical, oscuro, inputs grandes
+- ✅ **Dashboard** — KPIs, quincena default, chart ventas 14 días, stock alerts
+- ✅ **Productos** — CRUD completo, búsqueda, restock, imágenes, lightbox
+- ✅ **Ventas** — Carrito con búsqueda de productos, descuentos, finalizar venta
+- ✅ **Clientes** — CRUD, deudas, pagos, ajustes
+- ✅ **Contabilidad** — KPIs anuales, chart mensual (Chart.js), toggle cross-company (admin)
+- ✅ **Devoluciones** — Crear desde venta, ajuste de stock, reintegrar deuda
+- ✅ **Multi-tienda** — Switch entre empresas con branding distinto (QueenShop amarillo, WolfStor azul)
+- ✅ **WolfStor (tienda zapatos)** — Company ID=3, tema azul #2563eb, logo wolfstor-logo.svg
+- ✅ **Tema oscuro** — Fondo #121212, texto blanco, amarillo primario (#ffc107), verde dinero (#28a745)
+- ✅ **DB MySQL/SQLite** — Fallback automático cuando MySQL no está disponible
+- ⚠️ **WolfStor logo** — El archivo `wolfstor-logo.svg` necesita crearse en `/assets/img/`
 
 ## Decisiones de arquitectura
 

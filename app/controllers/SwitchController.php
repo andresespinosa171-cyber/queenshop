@@ -7,7 +7,8 @@ class SwitchController extends Controller {
         $this->company = new Company();
     }
 
-    public function switch(int $companyId): void {
+    public function switch(int $id): void {
+        $companyId = $id;
         // Validate company exists
         $company = $this->company->find($companyId);
         if (!$company) {
