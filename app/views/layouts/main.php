@@ -18,7 +18,7 @@ $allCompanies = $companyModel->getAll();
     <!-- ─── Navbar ─────────────────────────────────────────────── -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="<?= BASE_URL ?>/">
+            <a class="navbar-brand fw-bold" href="<?= BASE_URL ?>/dashboard">
                 <?php $logoPath = current_company_logo(); ?>
                 <?php if (str_starts_with($logoPath, 'http')): ?>
                     <img src="<?= htmlspecialchars($logoPath) ?>" alt="<?= htmlspecialchars(current_store_name()) ?>" width="32" height="32" class="d-inline-block align-text-bottom me-1">
@@ -35,8 +35,8 @@ $allCompanies = $companyModel->getAll();
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], BASE_URL . '/dashboard') || $_SERVER['REQUEST_URI'] === BASE_URL . '/' || $_SERVER['REQUEST_URI'] === BASE_URL ? 'active' : '' ?>"
-                           href="<?= BASE_URL ?>/">
+                        <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], BASE_URL . '/dashboard') ? 'active' : '' ?>"
+                           href="<?= BASE_URL ?>/dashboard">
                             <i class="bi bi-grid-1x2-fill"></i> Dashboard
                         </a>
                     </li>
@@ -72,36 +72,24 @@ $allCompanies = $companyModel->getAll();
                     </li>
                 </ul>
 
-                <?php if (!empty($_SESSION['user_id']) && count($allCompanies) > 1): ?>
-                    <span class="navbar-text ms-auto">
-                        <div class="dropdown d-inline-block">
-                            <a class="dropdown-toggle text-decoration-none text-light-emphasis" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-shop"></i> <?= htmlspecialchars(current_store_name()) ?>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <?php foreach ($allCompanies as $c): ?>
-                                    <li>
-                                        <a class="dropdown-item <?= (int)$c['id'] === current_company_id() ? 'active' : '' ?>"
-                                           href="<?= BASE_URL ?>/switch-store/<?= $c['id'] ?>">
-                                            <?= htmlspecialchars($c['store_name'] ?? $c['name']) ?>
-                                        </a>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                    </span>
-                <?php endif; ?>
-
-                <span class="navbar-text small text-light-emphasis">
+                <span class="navbar-text small text-light-emphasis me-2">
                     <i class="bi bi-calendar3"></i> <?= date('d/m/Y') ?>
                 </span>
+
                 <?php if (!empty($_SESSION['user_id'])): ?>
-                    <div class="d-flex align-items-center gap-2 ms-2">
-                        <span class="navbar-text small text-light-emphasis">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="navbar-text small text-light-emphasis d-none d-md-inline">
                             <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['company_name'] ?? '') ?>
                         </span>
-                        <a href="<?= BASE_URL ?>/logout" class="btn btn-sm btn-outline-warning">
-                            <i class="bi bi-box-arrow-right"></i> Salir
+                        <!-- Switch store = logout + redirect to landing -->
+                        <a href="<?= BASE_URL ?>/logout"
+                           class="btn btn-sm d-inline-flex align-items-center gap-1"
+                           style="background: transparent; border: 1px solid <?= htmlspecialchars(current_primary_color()) ?>; color: <?= htmlspecialchars(current_primary_color()) ?>; border-radius: 50px; padding: 4px 14px; font-weight: 500;">
+                            <i class="bi bi-arrow-left-right"></i>
+                            <span>Cambiar tienda</span>
+                        </a>
+                        <a href="<?= BASE_URL ?>/logout?full=1" class="btn btn-sm btn-outline-secondary" title="Cerrar sesión">
+                            <i class="bi bi-box-arrow-right"></i>
                         </a>
                     </div>
                 <?php endif; ?>
@@ -122,6 +110,13 @@ $allCompanies = $companyModel->getAll();
             <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 border-0 shadow-sm">
                 <i class="bi bi-exclamation-triangle-fill fs-5"></i>
                 <?= htmlspecialchars(session_get('error')) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+        <?php if (session_has('info')): ?>
+            <div class="alert alert-info alert-dismissible fade show d-flex align-items-center gap-2 border-0 shadow-sm">
+                <i class="bi bi-info-circle-fill fs-5"></i>
+                <?= htmlspecialchars(session_get('info')) ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>

@@ -1,17 +1,79 @@
 <?php
 
 class AuthController extends Controller {
+    private Company $company;
+
+    public function __construct() {
+        $this->company = new Company();
+    }
+
+    /**
+     * Handle store preselection from landing page.
+     * Accepts POST (from landing form) or GET (direct link).
+     */
+    private function preselectedStore(): ?array {
+        // POST from landing page
+        $storeId = $_POST['store_id'] ?? ($_GET['store'] ?? null);
+        if ($storeId) {
+            $company = $this->company->find((int) $storeId);
+            if ($company) {
+                $_SESSION['store_preselected'] = [
+                    'company_id'    => (int) $company['id'],
+                    'name'          => $company['store_name'] ?? $company['name'],
+                    'theme'         => $company['theme'] ?? 'queenshop',
+                    'primary_color' => $company['primary_color'] ?? '#ffc107',
+                    'logo'          => $company['logo'] ?? 'logo.svg',
+                    'description'   => $company['description'] ?? '',
+                ];
+            }
+        }
+
+        return $_SESSION['store_preselected'] ?? null;
+    }
+
+    /**
+     * Redirect back to store selection landing.
+     */
+    private function redirectToLanding(string $flash = ''): void {
+        unset($_SESSION['store_preselected']);
+        if ($flash) {
+            session_flash('info', $flash);
+        }
+        $this->redirect('/');
+    }
 
     public function loginForm(): void {
         if (isset($_SESSION['user_id'])) {
-            $this->redirect('/');
+            $this->redirect('/dashboard');
+            return;
         }
-        $this->view('auth/login', ['title' => 'QueenShop — Iniciar Sesión'], 'auth/layout');
+
+        $store = $this->preselectedStore();
+
+        if (!$store) {
+            // No store selected — go back to landing
+            $this->redirectToLanding('Seleccioná una tienda primero.');
+            return;
+        }
+
+        $this->view('auth/login', [
+            'store' => $store,
+            'title' => $store['name'] . ' — Iniciar Sesión',
+        ], 'auth/layout');
     }
 
     public function login(): void {
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
+
+        // Handle POST from landing page
+        $this->preselectedStore();
+
+        $store = $_SESSION['store_preselected'] ?? null;
+        if (!$store) {
+            $this->redirectToLanding('Seleccioná una tienda primero.');
+            return;
+        }
 
         if ($username === '' || $password === '') {
             session_flash('error', 'Completá todos los campos.');
@@ -19,7 +81,11 @@ class AuthController extends Controller {
             return;
         }
 
+        $targetCompanyId = $store['company_id'];
+
         $db = getDB();
+
+        // Find user — join with companies to get company name
         $stmt = $db->prepare("SELECT u.*, c.name AS company_name FROM users u JOIN companies c ON u.company_id = c.id WHERE u.username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
@@ -30,37 +96,75 @@ class AuthController extends Controller {
             return;
         }
 
+        // Validate user has access to the selected store
+        $hasAccess = false;
+        $userId = (int) $user['id'];
+        if ($userId == 1) {
+            $hasAccess = true; // Super-admin can access all
+        } else {
+            $access = $db->prepare("SELECT 1 FROM user_companies WHERE user_id = ? AND company_id = ?");
+            $access->execute([$userId, $targetCompanyId]);
+            $hasAccess = (bool) $access->fetch();
+        }
+
+        if (!$hasAccess) {
+            session_flash('error', 'No tenés acceso a ' . htmlspecialchars($store['name']) . '.');
+            $this->redirect('/login');
+            return;
+        }
+
+        // Clear preselection and set session
+        unset($_SESSION['store_preselected']);
+
         $_SESSION['user_id'] = $user['id'];
-        $_SESSION['company_id'] = $user['company_id'];
-        $_SESSION['company_name'] = $user['company_name'];
+        $_SESSION['company_id'] = $targetCompanyId;
+        $_SESSION['company_name'] = $store['name'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
 
-        // Load full company branding into session
-        $stmt2 = getDB()->prepare("SELECT * FROM companies WHERE id = ?");
-        $stmt2->execute([$user['company_id']]);
-        $company = $stmt2->fetch();
-        $_SESSION['store_name'] = $company['store_name'] ?? 'QueenShop';
-        $_SESSION['logo'] = $company['logo'] ?? 'logo.svg';
-        $_SESSION['theme'] = $company['theme'] ?? 'queenshop';
-        $_SESSION['primary_color'] = $company['primary_color'] ?? '#ffc107';
-        $_SESSION['company_description'] = $company['description'] ?? '';
+        // Load full company branding
+        $company = $this->company->find($targetCompanyId);
+        $_SESSION['store_name'] = $company['store_name'] ?? $store['name'];
+        $_SESSION['logo'] = $company['logo'] ?? $store['logo'];
+        $_SESSION['theme'] = $company['theme'] ?? $store['theme'];
+        $_SESSION['primary_color'] = $company['primary_color'] ?? $store['primary_color'];
+        $_SESSION['company_description'] = $company['description'] ?? $store['description'];
 
-        $this->redirect('/');
+        session_flash('success', 'Bienvenido a ' . htmlspecialchars($_SESSION['store_name']));
+        $this->redirect('/dashboard');
     }
 
     public function registerForm(): void {
         if (isset($_SESSION['user_id'])) {
-            $this->redirect('/');
+            $this->redirect('/dashboard');
+            return;
         }
-        $this->view('auth/register', ['title' => 'QueenShop — Crear Cuenta'], 'auth/layout');
+
+        $store = $this->preselectedStore();
+
+        if (!$store) {
+            $this->redirectToLanding('Seleccioná una tienda primero.');
+            return;
+        }
+
+        $this->view('auth/register', [
+            'store' => $store,
+            'title' => $store['name'] . ' — Crear Cuenta',
+        ], 'auth/layout');
     }
 
     public function register(): void {
+        $this->preselectedStore();
+        $store = $_SESSION['store_preselected'] ?? null;
+
+        if (!$store) {
+            $this->redirectToLanding('Seleccioná una tienda primero.');
+            return;
+        }
+
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
         $confirm  = $_POST['confirm_password'] ?? '';
-        $storeType = $_POST['store_type'] ?? 'pet_shop';
 
         if ($username === '' || $password === '') {
             session_flash('error', 'Completá todos los campos.');
@@ -103,37 +207,37 @@ class AuthController extends Controller {
             return;
         }
 
+        // Use the preselected store's company for new user
+        $isWolfStor = $store['theme'] === 'wolfstor';
+        $theme = $isWolfStor ? 'wolfstor' : 'queenshop';
+        $primaryColor = $isWolfStor ? '#2563eb' : '#ffc107';
+        $storeNameSuffix = $isWolfStor ? "'s WolfStor" : "'s Shop";
+        $logo = $isWolfStor ? 'wolfstor-logo.svg' : 'logo.svg';
+        $description = $isWolfStor ? 'Tienda de zapatos' : 'Tienda de mascotas';
+
         try {
             $db->beginTransaction();
 
-            // Map store type to branding
-            if ($storeType === 'shoe_store') {
-                $theme = 'wolfstor';
-                $primaryColor = '#2563eb';
-                $storeName = $username . "'s WolfStor";
-                $logo = 'wolfstor-logo.svg';
-                $description = 'Tienda de zapatos';
-            } else {
-                $theme = 'queenshop';
-                $primaryColor = '#ffc107';
-                $storeName = $username . "'s Shop";
-                $logo = 'logo.svg';
-                $description = 'Tienda de mascotas';
-            }
-
-            // Create company with branding
+            // Create company based on preselected store theme
+            $fullName = $username . $storeNameSuffix;
             $stmt = $db->prepare("INSERT INTO companies (name, store_name, theme, logo, primary_color, description) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$storeName, $storeName, $theme, $logo, $primaryColor, $description]);
+            $stmt->execute([$fullName, $fullName, $theme, $logo, $primaryColor, $description]);
             $companyId = $db->lastInsertId();
 
             // Create user
             $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 10]);
             $stmt = $db->prepare("INSERT INTO users (company_id, username, password) VALUES (?, ?, ?)");
             $stmt->execute([$companyId, $username, $hash]);
+            $userId = $db->lastInsertId();
+
+            // Grant access
+            $stmt = $db->prepare("INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (?, ?, 'admin')");
+            $stmt->execute([$userId, $companyId]);
 
             $db->commit();
 
-            session_flash('success', 'Cuenta creada correctamente. Ahora iniciá sesión.');
+            unset($_SESSION['store_preselected']);
+            session_flash('success', 'Cuenta creada correctamente para ' . htmlspecialchars($fullName) . '. Ahora iniciá sesión.');
             $this->redirect('/login');
         } catch (Exception $e) {
             $db->rollBack();
@@ -144,6 +248,6 @@ class AuthController extends Controller {
 
     public function logout(): void {
         session_destroy();
-        $this->redirect('/login');
+        $this->redirect('/');
     }
 }
