@@ -11,29 +11,26 @@ class SwitchController extends Controller {
         // Validate company exists
         $company = $this->company->find($companyId);
         if (!$company) {
-            session_flash('error', 'Tienda no encontrada.');
-            $this->redirect('/');
+            $this->showError('Tienda no encontrada.', $companyId);
             return;
         }
 
-        // For now, allow switching if user is admin (user_id=1)
-        // or if user has access via user_companies (future)
+        // Check user access
         $userId = $_SESSION['user_id'] ?? 0;
+        $hasAccess = false;
 
         if ($userId == 1) {
-            // Admin can access all companies
+            $hasAccess = true; // Admin can access all
         } else {
-            // Check user_companies pivot
             $db = getDB();
-            $access = $db->query(
-                "SELECT 1 FROM user_companies WHERE user_id = ? AND company_id = ?",
-                [$userId, $companyId]
-            )->fetch();
-            if (!$access) {
-                session_flash('error', 'No tenés acceso a esa tienda.');
-                $this->redirect('/');
-                return;
-            }
+            $access = $db->prepare("SELECT 1 FROM user_companies WHERE user_id = ? AND company_id = ?");
+            $access->execute([$userId, $companyId]);
+            $hasAccess = (bool) $access->fetch();
+        }
+
+        if (!$hasAccess) {
+            $this->showError('No tenés acceso a esa tienda.', $companyId);
+            return;
         }
 
         // Rebind session
@@ -47,5 +44,28 @@ class SwitchController extends Controller {
 
         session_flash('success', 'Cambiaste a ' . htmlspecialchars($_SESSION['store_name']));
         $this->redirect('/');
+    }
+
+    private function showError(string $message, int $failedId): void {
+        $userId = $_SESSION['user_id'] ?? 0;
+
+        // Get available stores for this user
+        if ($userId == 1) {
+            $available = $this->company->getAll();
+        } else {
+            $available = $this->company->getByUser($userId);
+        }
+
+        // If none found via getByUser, fallback to user's own company
+        if (empty($available)) {
+            $own = $this->company->find($_SESSION['company_id'] ?? 0);
+            if ($own) $available = [$own];
+        }
+
+        $this->view('switch/error', [
+            'error'           => $message,
+            'availableStores' => $available,
+            'title'           => 'Error al cambiar de tienda',
+        ]);
     }
 }
