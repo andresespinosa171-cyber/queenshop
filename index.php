@@ -32,6 +32,9 @@ spl_autoload_register(function ($class) {
 // ─── Routes ───────────────────────────────────────────────────
 $router = new Router();
 
+// Store selection (public — no login required)
+$router->get('/',           'StoreSelectionController@index');
+
 // Auth routes (public — no login required)
 $router->get('/login',     'AuthController@loginForm');
 $router->post('/login',    'AuthController@login');
@@ -40,7 +43,6 @@ $router->post('/register', 'AuthController@register');
 $router->get('/logout',    'AuthController@logout');
 
 // Dashboard
-$router->get('/',           'DashboardController@index');
 $router->get('/dashboard',  'DashboardController@index');
 
 // Accounting
@@ -92,7 +94,7 @@ if (BASE_URL !== '' && str_starts_with($uri, BASE_URL)) {
 }
 
 // ─── Auth Guard ───────────────────────────────────────────────
-$publicRoutes = ['/login', '/register', '/logout'];
+$publicRoutes = ['/', '/login', '/register', '/logout'];
 if (!in_array($uri, $publicRoutes, true)) {
     require_login();
 }

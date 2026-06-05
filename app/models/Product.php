@@ -22,6 +22,32 @@ class Product extends Model {
             $params[] = '%' . $filters['search'] . '%';
         }
 
+        // Filter by color (multi-select)
+        if (!empty($filters['colors']) && is_array($filters['colors'])) {
+            $placeholders = implode(',', array_fill(0, count($filters['colors']), '?'));
+            $sql .= " AND p.color IN ({$placeholders})";
+            $params = array_merge($params, $filters['colors']);
+        }
+
+        // Filter by brand (multi-select)
+        if (!empty($filters['brands']) && is_array($filters['brands'])) {
+            $placeholders = implode(',', array_fill(0, count($filters['brands']), '?'));
+            $sql .= " AND p.brand IN ({$placeholders})";
+            $params = array_merge($params, $filters['brands']);
+        }
+
+        // Filter by gender
+        if (!empty($filters['gender'])) {
+            $sql .= " AND p.gender = ?";
+            $params[] = $filters['gender'];
+        }
+
+        // Filter by boot type
+        if (!empty($filters['boot_type'])) {
+            $sql .= " AND p.boot_type = ?";
+            $params[] = $filters['boot_type'];
+        }
+
         // Filter by category
         if (!empty($filters['category_id'])) {
             $sql .= " AND p.category_id = ?";
@@ -183,5 +209,23 @@ class Product extends Model {
              WHERE p.id = ? AND p.company_id = ?",
             [$id, $companyId]
         )->fetch();
+    }
+
+    public function getDistinctColors(int $companyId): array {
+        return $this->query(
+            "SELECT DISTINCT p.color FROM products p
+             WHERE p.company_id = ? AND p.color != '' AND p.color IS NOT NULL
+             ORDER BY p.color ASC",
+            [$companyId]
+        )->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    public function getDistinctBrands(int $companyId): array {
+        return $this->query(
+            "SELECT DISTINCT p.brand FROM products p
+             WHERE p.company_id = ? AND p.brand != '' AND p.brand IS NOT NULL
+             ORDER BY p.brand ASC",
+            [$companyId]
+        )->fetchAll(PDO::FETCH_COLUMN);
     }
 }

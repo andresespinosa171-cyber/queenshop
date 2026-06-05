@@ -1,72 +1,33 @@
 <?php
 
 class SwitchController extends Controller {
-    private Company $company;
-
-    public function __construct() {
-        $this->company = new Company();
-    }
-
+    /**
+     * Store switch now logs out and redirects to landing.
+     * The user must re-authenticate to access a different store.
+     */
     public function switch(int $id): void {
-        $companyId = $id;
-        // Validate company exists
-        $company = $this->company->find($companyId);
-        if (!$company) {
-            $this->showError('Tienda no encontrada.', $companyId);
-            return;
+        $company = new Company();
+        $store = $company->find($id);
+
+        if ($store) {
+            $storeName = $store['store_name'] ?? $store['name'];
+            session_flash('info', 'Cambiaste a ' . htmlspecialchars($storeName) . '. Iniciá sesión para continuar.');
         }
 
-        // Check user access
-        $userId = $_SESSION['user_id'] ?? 0;
-        $hasAccess = false;
+        session_destroy();
+        session_start();
 
-        if ($userId == 1) {
-            $hasAccess = true; // Admin can access all
-        } else {
-            $db = getDB();
-            $access = $db->prepare("SELECT 1 FROM user_companies WHERE user_id = ? AND company_id = ?");
-            $access->execute([$userId, $companyId]);
-            $hasAccess = (bool) $access->fetch();
+        if ($store) {
+            $_SESSION['store_preselected'] = [
+                'company_id'    => (int) $store['id'],
+                'name'          => $store['store_name'] ?? $store['name'],
+                'theme'         => $store['theme'] ?? 'queenshop',
+                'primary_color' => $store['primary_color'] ?? '#ffc107',
+                'logo'          => $store['logo'] ?? 'logo.svg',
+                'description'   => $store['description'] ?? '',
+            ];
         }
 
-        if (!$hasAccess) {
-            $this->showError('No tenés acceso a esa tienda.', $companyId);
-            return;
-        }
-
-        // Rebind session
-        $_SESSION['company_id'] = (int) $company['id'];
-        $_SESSION['company_name'] = $company['name'];
-        $_SESSION['store_name'] = $company['store_name'] ?? $company['name'];
-        $_SESSION['logo'] = $company['logo'] ?? 'logo.svg';
-        $_SESSION['theme'] = $company['theme'] ?? 'queenshop';
-        $_SESSION['primary_color'] = $company['primary_color'] ?? '#ffc107';
-        $_SESSION['company_description'] = $company['description'] ?? '';
-
-        session_flash('success', 'Cambiaste a ' . htmlspecialchars($_SESSION['store_name']));
-        $this->redirect('/');
-    }
-
-    private function showError(string $message, int $failedId): void {
-        $userId = $_SESSION['user_id'] ?? 0;
-
-        // Get available stores for this user
-        if ($userId == 1) {
-            $available = $this->company->getAll();
-        } else {
-            $available = $this->company->getByUser($userId);
-        }
-
-        // If none found via getByUser, fallback to user's own company
-        if (empty($available)) {
-            $own = $this->company->find($_SESSION['company_id'] ?? 0);
-            if ($own) $available = [$own];
-        }
-
-        $this->view('switch/error', [
-            'error'           => $message,
-            'availableStores' => $available,
-            'title'           => 'Error al cambiar de tienda',
-        ]);
+        $this->redirect('/login');
     }
 }

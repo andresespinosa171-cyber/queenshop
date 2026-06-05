@@ -2,36 +2,67 @@
 
 class ProductController extends Controller {
     private Product $product;
+    private const BRANDS = [
+        'Adidas', 'Nike', 'Gucci', 'Puma', 'Reebok', 
+        'New Balance', 'Converse', 'Vans', 'Timberland', 
+        'Dr. Martens', 'Crocs', 'Skechers', 'Fila', 'Other'
+    ];
 
     public function __construct() {
         $this->product = new Product();
     }
 
     public function index(): void {
+        $companyId = current_company_id();
+        $isWolfStor = current_theme_class() === 'wolfstor';
+
         $filters = [
             'search'      => $_GET['search'] ?? '',
             'category_id' => $_GET['category_id'] ?? '',
             'stock'       => $_GET['stock'] ?? '',
             'sort'        => $_GET['sort'] ?? 'name',
             'order'       => $_GET['order'] ?? 'ASC',
-            'company_id'  => current_company_id(),
+            'company_id'  => $companyId,
         ];
 
-        $products   = $this->product->getAll($filters, current_company_id());
-        $categories = $this->product->getAllCategories(current_company_id());
+        // WolfStor-specific filters
+        if ($isWolfStor) {
+            $filters['colors']    = $_GET['colors'] ?? [];
+            $filters['brands']    = $_GET['brands'] ?? [];
+            $filters['gender']    = $_GET['gender'] ?? '';
+            $filters['boot_type'] = $_GET['boot_type'] ?? '';
+        }
+
+        $products   = $this->product->getAll($filters, $companyId);
+        $categories = $this->product->getAllCategories($companyId);
+
+        // Dynamic filter values
+        $availableColors = [];
+        $availableBrands = [];
+        if ($isWolfStor) {
+            $availableColors = $this->product->getDistinctColors($companyId);
+            $availableBrands = $this->product->getDistinctBrands($companyId);
+        }
 
         $this->view('products/index', [
-            'products'   => $products,
-            'categories' => $categories,
-            'filters'    => $filters,
-            'title'      => 'Productos',
+            'products'         => $products,
+            'categories'       => $categories,
+            'filters'          => $filters,
+            'isWolfStor'       => $isWolfStor,
+            'availableColors'  => $availableColors,
+            'availableBrands'  => $availableBrands,
+            'title'            => 'Productos',
         ]);
     }
 
     public function create(): void {
         $categories = $this->product->getAllCategories(current_company_id());
+        $isWolfStor = current_theme_class() === 'wolfstor';
+
         $this->view('products/create', [
             'categories' => $categories,
+            'isWolfStor' => $isWolfStor,
+            'brands'     => self::BRANDS,
             'title'      => 'Nuevo Producto',
         ]);
     }
@@ -56,7 +87,7 @@ class ProductController extends Controller {
             $image = $this->uploadImage($_FILES['image']);
         }
 
-        $this->product->create([
+        $data = [
             'name'           => $name,
             'description'    => $description,
             'purchase_price' => $purchase,
@@ -65,7 +96,17 @@ class ProductController extends Controller {
             'category_id'    => $categoryId,
             'image'          => $image,
             'company_id'     => current_company_id(),
-        ]);
+        ];
+
+        // Shoe-specific fields
+        if (current_theme_class() === 'wolfstor') {
+            $data['color']     = trim($_POST['color'] ?? '');
+            $data['brand']     = trim($_POST['brand'] ?? '');
+            $data['gender']    = $_POST['gender'] ?? '';
+            $data['boot_type'] = $_POST['boot_type'] ?? '';
+        }
+
+        $this->product->create($data);
 
         session_flash('success', 'Producto creado correctamente.');
         $this->redirect('/products');
@@ -80,9 +121,13 @@ class ProductController extends Controller {
         }
 
         $categories = $this->product->getAllCategories(current_company_id());
+        $isWolfStor = current_theme_class() === 'wolfstor';
+
         $this->view('products/edit', [
             'product'    => $product,
             'categories' => $categories,
+            'isWolfStor' => $isWolfStor,
+            'brands'     => self::BRANDS,
             'title'      => 'Editar Producto',
         ]);
     }
@@ -117,9 +162,16 @@ class ProductController extends Controller {
             'category_id'    => $categoryId,
         ];
 
+        // Shoe-specific fields
+        if (current_theme_class() === 'wolfstor') {
+            $data['color']     = trim($_POST['color'] ?? '');
+            $data['brand']     = trim($_POST['brand'] ?? '');
+            $data['gender']    = $_POST['gender'] ?? '';
+            $data['boot_type'] = $_POST['boot_type'] ?? '';
+        }
+
         // Image upload
         if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-            // Delete old image
             if ($product['image'] && file_exists(__DIR__ . '/../../' . $product['image'])) {
                 unlink(__DIR__ . '/../../' . $product['image']);
             }
@@ -134,7 +186,6 @@ class ProductController extends Controller {
     public function destroy(int $id): void {
         $product = $this->product->findWithCompanyCheck($id, current_company_id());
         if ($product) {
-            // Delete image
             if ($product['image'] && file_exists(__DIR__ . '/../../' . $product['image'])) {
                 unlink(__DIR__ . '/../../' . $product['image']);
             }
@@ -174,12 +225,10 @@ class ProductController extends Controller {
         $str = (string) $value;
         $str = str_replace(['$', ' '], '', $str);
 
-        // Si tiene coma, es formato COP (1.234,56) -> saco puntos, coma va a punto
         if (str_contains($str, ',')) {
             $str = str_replace('.', '', $str);
             $str = str_replace(',', '.', $str);
         }
-        // Si no tiene coma, ya está en formato US (1234.56) -> lo dejamos como está
 
         return (float) $str;
     }
@@ -203,7 +252,7 @@ class ProductController extends Controller {
         $destPath = $uploadDir . '/' . $filename;
 
         if (!move_uploaded_file($file['tmp_name'], $destPath)) {
-            session_flash('error', 'Error al subir la imagen. Verificá que la carpeta uploads/ tenga permisos de escritura.');
+            session_flash('error', 'Error al subir la imagen.');
             $this->back();
             exit;
         }

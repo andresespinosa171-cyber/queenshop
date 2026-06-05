@@ -282,6 +282,20 @@ function runMigrations(PDO $db): void {
                 // user_companies table might not exist yet — that's fine
             }
         },
+        '008_shoe_attributes' => function () use ($db, $isMySQL) {
+            if ($isMySQL) {
+                try { $db->exec("ALTER TABLE products ADD COLUMN color VARCHAR(100) NOT NULL DEFAULT ''"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE products ADD COLUMN brand VARCHAR(100) NOT NULL DEFAULT ''"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE products ADD COLUMN gender VARCHAR(20) NOT NULL DEFAULT ''"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE products ADD COLUMN boot_type VARCHAR(20) NOT NULL DEFAULT ''"); } catch (Exception $e) {}
+            } else {
+                $info = $db->query("PRAGMA table_info(products)")->fetchAll(PDO::FETCH_COLUMN, 1);
+                if (!in_array('color', $info))     $db->exec("ALTER TABLE products ADD COLUMN color TEXT NOT NULL DEFAULT ''");
+                if (!in_array('brand', $info))     $db->exec("ALTER TABLE products ADD COLUMN brand TEXT NOT NULL DEFAULT ''");
+                if (!in_array('gender', $info))    $db->exec("ALTER TABLE products ADD COLUMN gender TEXT NOT NULL DEFAULT ''");
+                if (!in_array('boot_type', $info)) $db->exec("ALTER TABLE products ADD COLUMN boot_type TEXT NOT NULL DEFAULT ''");
+            }
+        },
     ];
 
     foreach ($migrations as $name => $callback) {
