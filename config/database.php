@@ -181,6 +181,31 @@ function runMigrations(PDO $db): void {
                 )");
             }
         },
+        '005_add_company_branding' => function () use ($db, $isMySQL) {
+            if ($isMySQL) {
+                try { $db->exec("ALTER TABLE companies ADD COLUMN theme VARCHAR(50) NOT NULL DEFAULT 'queenshop'"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE companies ADD COLUMN store_name VARCHAR(200) NOT NULL DEFAULT 'QueenShop'"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE companies ADD COLUMN logo VARCHAR(255) NOT NULL DEFAULT 'logo.svg'"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE companies ADD COLUMN primary_color VARCHAR(7) NOT NULL DEFAULT '#ffc107'"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE companies ADD COLUMN description TEXT DEFAULT ''"); } catch (Exception $e) {}
+                // Seed WolfStor if not exists
+                $cnt = $db->query("SELECT COUNT(*) FROM companies")->fetchColumn();
+                if ($cnt < 3) {
+                    $db->exec("INSERT IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (3, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos')");
+                }
+            } else {
+                $info = $db->query("PRAGMA table_info(companies)")->fetchAll(PDO::FETCH_COLUMN, 1);
+                if (!in_array('theme', $info)) $db->exec("ALTER TABLE companies ADD COLUMN theme TEXT NOT NULL DEFAULT 'queenshop'");
+                if (!in_array('store_name', $info)) $db->exec("ALTER TABLE companies ADD COLUMN store_name TEXT NOT NULL DEFAULT 'QueenShop'");
+                if (!in_array('logo', $info)) $db->exec("ALTER TABLE companies ADD COLUMN logo TEXT NOT NULL DEFAULT 'logo.svg'");
+                if (!in_array('primary_color', $info)) $db->exec("ALTER TABLE companies ADD COLUMN primary_color TEXT NOT NULL DEFAULT '#ffc107'");
+                if (!in_array('description', $info)) $db->exec("ALTER TABLE companies ADD COLUMN description TEXT DEFAULT ''");
+                $cnt = $db->query("SELECT COUNT(*) FROM companies")->fetchColumn();
+                if ($cnt < 3) {
+                    $db->exec("INSERT INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (3, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos')");
+                }
+            }
+        },
     ];
 
     foreach ($migrations as $name => $callback) {

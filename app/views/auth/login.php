@@ -4,10 +4,17 @@
             <div class="card-body p-4 p-md-5 text-center">
                 <!-- Logo -->
                 <div class="mb-3">
-                    <img src="<?= BASE_URL ?>/assets/img/logo.svg" alt="QueenShop"
-                         width="80" height="80">
+                    <?php $logoPath = current_company_logo(); ?>
+                    <?php if (str_starts_with($logoPath, 'http')): ?>
+                        <img src="<?= htmlspecialchars($logoPath) ?>" alt="<?= htmlspecialchars(current_store_name()) ?>"
+                             width="80" height="80">
+                    <?php else: ?>
+                        <img src="<?= BASE_URL ?>/assets/img/<?= htmlspecialchars($logoPath) ?>"
+                             alt="<?= htmlspecialchars(current_store_name()) ?>"
+                             width="80" height="80">
+                    <?php endif; ?>
                 </div>
-                <h4 class="fw-bold mb-1">QueenShop</h4>
+                <h4 class="fw-bold mb-1"><?= htmlspecialchars(current_store_name()) ?></h4>
                 <p class="text-muted small mb-4">Iniciá sesión para continuar</p>
 
                 <form method="POST" action="<?= BASE_URL ?>/login" class="text-start">

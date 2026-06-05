@@ -36,6 +36,15 @@ class AuthController extends Controller {
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
 
+        // Load full company branding into session
+        $db2 = getDB();
+        $company = $db2->query("SELECT * FROM companies WHERE id = ?", [$user['company_id']])->fetch();
+        $_SESSION['store_name'] = $company['store_name'] ?? 'QueenShop';
+        $_SESSION['logo'] = $company['logo'] ?? 'logo.svg';
+        $_SESSION['theme'] = $company['theme'] ?? 'queenshop';
+        $_SESSION['primary_color'] = $company['primary_color'] ?? '#ffc107';
+        $_SESSION['company_description'] = $company['description'] ?? '';
+
         $this->redirect('/');
     }
 
@@ -50,6 +59,7 @@ class AuthController extends Controller {
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
         $confirm  = $_POST['confirm_password'] ?? '';
+        $storeType = $_POST['store_type'] ?? 'pet_shop';
 
         if ($username === '' || $password === '') {
             session_flash('error', 'Completá todos los campos.');
@@ -95,10 +105,24 @@ class AuthController extends Controller {
         try {
             $db->beginTransaction();
 
-            // Create company
-            $companyName = $username . "'s Shop";
-            $stmt = $db->prepare("INSERT INTO companies (name) VALUES (?)");
-            $stmt->execute([$companyName]);
+            // Map store type to branding
+            if ($storeType === 'shoe_store') {
+                $theme = 'wolfstor';
+                $primaryColor = '#2563eb';
+                $storeName = $username . "'s WolfStor";
+                $logo = 'wolfstor-logo.svg';
+                $description = 'Tienda de zapatos';
+            } else {
+                $theme = 'queenshop';
+                $primaryColor = '#ffc107';
+                $storeName = $username . "'s Shop";
+                $logo = 'logo.svg';
+                $description = 'Tienda de mascotas';
+            }
+
+            // Create company with branding
+            $stmt = $db->prepare("INSERT INTO companies (name, store_name, theme, logo, primary_color, description) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$storeName, $storeName, $theme, $logo, $primaryColor, $description]);
             $companyId = $db->lastInsertId();
 
             // Create user

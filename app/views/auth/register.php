@@ -22,6 +22,14 @@
                         <label class="form-label small fw-medium">Contraseña</label>
                         <input type="password" name="password" class="form-control form-control-lg" placeholder="Mínimo 6 caracteres" required minlength="6">
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-medium">Tipo de tienda</label>
+                        <select name="store_type" class="form-select form-select-lg">
+                            <option value="pet_shop">Tienda de mascotas (QueenShop)</option>
+                            <option value="shoe_store">Tienda de zapatos (WolfStor)</option>
+                        </select>
+                        <div class="form-text">Elegí el tipo de tienda que querés administrar.</div>
+                    </div>
                     <div class="mb-4">
                         <label class="form-label small fw-medium">Repetir contraseña</label>
                         <input type="password" name="confirm_password" class="form-control form-control-lg" placeholder="Confirmar" required minlength="6">

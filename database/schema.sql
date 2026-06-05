@@ -4,6 +4,11 @@
 CREATE TABLE IF NOT EXISTS companies (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
+    theme VARCHAR(50) NOT NULL DEFAULT 'queenshop',
+    store_name VARCHAR(200) NOT NULL DEFAULT 'QueenShop',
+    logo VARCHAR(255) NOT NULL DEFAULT 'logo.svg',
+    primary_color VARCHAR(7) NOT NULL DEFAULT '#ffc107',
+    description TEXT DEFAULT '',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -128,9 +133,10 @@ INSERT IGNORE INTO categories (id, name) VALUES
 (7, 'Otros');
 
 -- Seed: Empresas de demostración
-INSERT IGNORE INTO companies (id, name) VALUES
-(1, 'QueenShop Norte'),
-(2, 'QueenShop Sur');
+INSERT IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES
+(1, 'QueenShop Norte', 'QueenShop Norte', 'queenshop', 'logo.svg', '#ffc107', 'Tienda de mascotas'),
+(2, 'QueenShop Sur', 'QueenShop Sur', 'queenshop', 'logo.svg', '#ffc107', 'Tienda de mascotas'),
+(3, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos');
 
 -- Seed: Usuarios de demostración (contraseña = 123456 con BCrypt)
 INSERT IGNORE INTO users (id, company_id, username, password, role) VALUES

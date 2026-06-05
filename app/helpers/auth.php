@@ -19,3 +19,23 @@ function current_company_name(): string {
 function is_admin(): bool {
     return ($_SESSION['role'] ?? '') === 'admin';
 }
+
+function current_store_name(): string {
+    return $_SESSION['store_name'] ?? 'QueenShop';
+}
+
+function current_company_logo(): string {
+    return $_SESSION['logo'] ?? 'logo.svg';
+}
+
+function current_theme_class(): string {
+    return $_SESSION['theme'] ?? 'queenshop';
+}
+
+function current_primary_color(): string {
+    return $_SESSION['primary_color'] ?? '#ffc107';
+}
+
+function current_user_companies(): array {
+    return $_SESSION['user_companies'] ?? [];
+}

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- Fondo redondo azul -->
+  <rect width="200" height="200" rx="100" fill="#2563eb"/>
+  <!-- Silueta de zapato (zapatilla) minimalista -->
+  <g transform="translate(100,100)">
+    <!-- Cuerpo del zapato -->
+    <path d="M-45,15 Q-50,0 -40,-10 Q-30,-20 -10,-20 L25,-20 Q45,-20 55,-10 Q65,0 60,15 Q55,25 45,28 L-35,28 Q-45,28 -45,15 Z"
+          fill="#1f2937"/>
+    <!-- Suela -->
+    <path d="M-40,28 L50,28 Q55,28 55,33 L-40,33 Q-45,33 -40,28 Z"
+          fill="#1f2937"/>
+    <!-- Detalle del cordón/tira -->
+    <path d="M-10,-5 Q0,-2 10,-5" stroke="#fff" stroke-width="2" fill="none" opacity="0.6"/>
+    <path d="M-5,5 Q5,8 15,5" stroke="#fff" stroke-width="2" fill="none" opacity="0.6"/>
+  </g>
+  <!-- Nombre WolfStor -->
+  <text x="100" y="170" text-anchor="middle" fill="#fff" font-size="22" font-family="Arial, sans-serif" font-weight="bold" letter-spacing="2">WolfStor</text>
+</svg>
