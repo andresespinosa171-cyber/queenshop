@@ -301,29 +301,30 @@ function runMigrations(PDO $db): void {
             }
         },
         '009_cleanup_companies' => function () use ($db, $isMySQL) {
-            // Elimina empresas duplicadas (QueenShop Norte/Sur) y deja solo:
-            //   id=1 → QueenShop
-            //   id=2 → WolfStor
-            $all = $db->query("SELECT id, name FROM companies ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
-            $idsToDelete = [];
-            foreach ($all as $c) {
-                if ($c['id'] == 1) continue;
-                if ($c['id'] == 2) continue;
-                $idsToDelete[] = (int)$c['id'];
+            // 1. Buscar WolfStor por nombre (NO por ID — en DB vieja puede ser id=2 o id=3)
+            $wolfId = $db->query("SELECT id FROM companies WHERE name LIKE '%WolfStor%' OR store_name LIKE '%WolfStor%'")->fetchColumn();
+
+            // 2. Si WolfStor no existe, lo creamos con id=2
+            if (!$wolfId) {
+                $ins = $isMySQL
+                    ? "INSERT IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (2, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos')"
+                    : "INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (2, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos')";
+                $db->exec($ins);
+                $wolfId = 2;
             }
-            if (!empty($idsToDelete)) {
-                $in = implode(',', $idsToDelete);
+
+            // 3. Eliminar empresas que NO sean QueenShop id=1 NI WolfStor (cualquier id que tenga)
+            $others = $db->query("SELECT id FROM companies WHERE id != 1 AND id != {$wolfId}")->fetchAll(PDO::FETCH_COLUMN);
+            if (!empty($others)) {
+                $in = implode(',', array_map('intval', $others));
                 foreach (['user_companies', 'categories', 'products', 'sales', 'returns'] as $table) {
                     try { $db->exec("UPDATE {$table} SET company_id = 1 WHERE company_id IN ({$in})"); } catch (Exception $e) {}
                 }
                 $db->exec("DELETE FROM companies WHERE id IN ({$in})");
             }
-            // Asegurar que WolfStor existe
-            $ws = $db->query("SELECT id FROM companies WHERE id = 2")->fetchColumn();
-            if (!$ws) {
-                $db->exec("INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (2, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos')");
-                try { $db->exec("INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 2, 'admin')"); } catch (Exception $e) {}
-            }
+
+            // 4. Asegurar acceso admin a WolfStor
+            try { $db->exec("INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, {$wolfId}, 'admin')"); } catch (Exception $e) {}
         },
     ];
 

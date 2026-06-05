@@ -7,7 +7,7 @@ $allCompanies = $companyModel->getAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars(current_store_name()) ?> — <?= htmlspecialchars($title ?? 'QueenShop') ?></title>
+    <title>MultiStore — <?= htmlspecialchars($title ?? current_store_name()) ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="<?= BASE_URL ?>/assets/img/logo.svg">
@@ -25,7 +25,7 @@ $allCompanies = $companyModel->getAll();
                 <?php else: ?>
                     <img src="<?= BASE_URL ?>/assets/img/<?= htmlspecialchars($logoPath) ?>" alt="<?= htmlspecialchars(current_store_name()) ?>" width="32" height="32" class="d-inline-block align-text-bottom me-1">
                 <?php endif; ?>
-                <?= htmlspecialchars(current_store_name()) ?>
+                MultiStore
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
                     data-bs-target="#mainNav" aria-controls="mainNav"
@@ -130,7 +130,7 @@ $allCompanies = $companyModel->getAll();
     <!-- ─── Footer ─────────────────────────────────────────────── -->
     <footer class="footer mt-auto py-3 bg-body-tertiary border-top">
         <div class="container text-center text-muted small">
-            <i class="bi bi-shop"></i> <?= htmlspecialchars(current_store_name()) ?> &mdash; <?= date('Y') ?>
+            <i class="bi bi-shop"></i> MultiStore &mdash; <?= date('Y') ?>
         </div>
     </footer>
 

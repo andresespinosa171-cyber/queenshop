@@ -47,42 +47,42 @@
     </div>
 <?php else: ?>
     <div class="table-responsive">
-        <table class="table table-dark table-hover align-middle">
-            <thead class="table-dark" style="border-bottom: 2px solid #ffc10733;">
+        <table class="table table-dark table-hover align-middle" style="color: #ffffff !important;">
+            <thead class="table-dark" style="border-bottom: 2px solid #ffc10733; color: #ffffff !important;">
                 <tr>
-                    <th class="text-light">Nombre</th>
-                    <th class="text-light">Teléfono</th>
-                    <th class="text-light">Email</th>
-                    <th class="text-end text-light">Debe</th>
+                    <th style="color:#ffffff !important;">Nombre</th>
+                    <th style="color:#ffffff !important;">Teléfono</th>
+                    <th style="color:#ffffff !important;">Email</th>
+                    <th style="color:#ffffff !important;" class="text-end">Debe</th>
                     <th style="width:120px"></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody style="color: #ffffff !important;">
                 <?php foreach ($clients as $c): ?>
                     <tr>
-                        <td class="fw-medium text-light">
-                            <a href="<?= BASE_URL ?>/clients/<?= $c['id'] ?>" class="text-decoration-none text-light">
+                        <td class="fw-medium" style="color:#ffffff !important;">
+                            <a href="<?= BASE_URL ?>/clients/<?= $c['id'] ?>" style="color:#ffffff !important; text-decoration:none;">
                                 <?= htmlspecialchars($c['name']) ?>
                             </a>
                         </td>
-                        <td class="text-light"><?= htmlspecialchars($c['phone'] ?: '—') ?></td>
-                        <td class="text-light"><?= htmlspecialchars($c['email'] ?: '—') ?></td>
-                        <td class="text-end <?= (float)$c['total_debt'] > 0 ? 'text-danger fw-bold' : 'text-muted' ?>">
+                        <td style="color:#ffffff !important;"><?= htmlspecialchars($c['phone'] ?: '—') ?></td>
+                        <td style="color:#ffffff !important;"><?= htmlspecialchars($c['email'] ?: '—') ?></td>
+                        <td class="text-end" style="<?= (float)$c['total_debt'] > 0 ? 'color:#dc3545 !important;font-weight:bold' : 'color:#6c757d !important' ?>">
                             <?= format_currency((float)$c['total_debt']) ?>
                         </td>
                         <td>
                             <div class="d-flex gap-1 justify-content-end">
                                 <a href="<?= BASE_URL ?>/clients/<?= $c['id'] ?>"
-                                   class="btn btn-sm btn-outline-secondary" title="Ver">
+                                   class="btn btn-sm btn-secondary" title="Ver">
                                     <i class="bi bi-eye"></i>
                                 </a>
                                 <a href="<?= BASE_URL ?>/clients/edit/<?= $c['id'] ?>"
-                                   class="btn btn-sm btn-outline-secondary" title="Editar">
+                                   class="btn btn-sm btn-secondary" title="Editar">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <form method="POST" action="<?= BASE_URL ?>/clients/delete/<?= $c['id'] ?>"
                                       onsubmit="return confirm(<?= htmlspecialchars(json_encode('¿Eliminar a ' . $c['name'] . '?'), ENT_QUOTES) ?>)">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>

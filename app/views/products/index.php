@@ -133,26 +133,26 @@
     </div>
 <?php else: ?>
     <div class="table-responsive">
-        <table class="table table-dark table-hover align-middle mb-0">
-            <thead class="table-dark" style="border-bottom: 2px solid #ffc10733;">
+        <table class="table table-dark table-hover align-middle mb-0" style="color: #ffffff !important;">
+            <thead class="table-dark" style="border-bottom: 2px solid #ffc10733; color: #ffffff !important;">
                 <tr>
-                    <th class="text-light" style="width:50px">Foto</th>
-                    <th class="text-light">Nombre</th>
+                    <th style="width:50px; color:#ffffff !important;">Foto</th>
+                    <th style="color:#ffffff !important;">Nombre</th>
                     <?php if ($isWolfStor): ?>
-                    <th class="text-light">Color</th>
-                    <th class="text-light">Marca</th>
-                    <th class="text-light">Género</th>
-                    <th class="text-light">Tipo</th>
+                    <th style="color:#ffffff !important;">Color</th>
+                    <th style="color:#ffffff !important;">Marca</th>
+                    <th style="color:#ffffff !important;">Género</th>
+                    <th style="color:#ffffff !important;">Tipo</th>
                     <?php endif; ?>
-                    <th class="text-light">Categoría</th>
-                    <th class="text-end text-light">Compra</th>
-                    <th class="text-end text-light">Venta</th>
-                    <th class="text-end text-light">Stock</th>
-                    <th class="text-end text-light">Ganancia</th>
+                    <th style="color:#ffffff !important;">Categoría</th>
+                    <th style="color:#ffffff !important;" class="text-end">Compra</th>
+                    <th style="color:#ffffff !important;" class="text-end">Venta</th>
+                    <th style="color:#ffffff !important;" class="text-end">Stock</th>
+                    <th style="color:#ffffff !important;" class="text-end">Ganancia</th>
                     <th style="width:120px"></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody style="color: #ffffff !important;">
                 <?php foreach ($products as $p): ?>
                     <?php
                         $profit = $p['sale_price'] - $p['purchase_price'];
@@ -160,23 +160,23 @@
                         $stockClass = $p['stock'] == 0 ? 'text-danger fw-bold' : ($p['stock'] <= 5 ? 'text-warning fw-bold' : 'text-light');
                     ?>
                     <tr>
-                        <td>
+                        <td style="color:#ffffff !important;">
                             <img src="<?= image_url($p['image']) ?>"
                                  alt="<?= htmlspecialchars($p['name']) ?>"
                                  class="product-img-clickable rounded border" style="width:40px;height:40px;object-fit:cover;">
                         </td>
-                        <td class="fw-medium text-light"><?= htmlspecialchars($p['name']) ?></td>
+                        <td class="fw-medium" style="color:#ffffff !important;"><?= htmlspecialchars($p['name']) ?></td>
                         <?php if ($isWolfStor): ?>
-                        <td><span class="badge bg-secondary text-light"><?= htmlspecialchars($p['color'] ?? '') ?></span></td>
+                        <td><span class="badge bg-secondary" style="color:#ffffff !important;"><?= htmlspecialchars($p['color'] ?? '') ?></span></td>
                         <td><span class="badge bg-warning text-dark"><?= htmlspecialchars($p['brand'] ?? '') ?></span></td>
                         <td><span class="badge bg-info text-dark"><?= htmlspecialchars($p['gender'] ?? '') ?></span></td>
-                        <td><span class="badge bg-primary text-light"><?= htmlspecialchars($p['boot_type'] ?? '') ?></span></td>
+                        <td><span class="badge bg-primary" style="color:#ffffff !important;"><?= htmlspecialchars($p['boot_type'] ?? '') ?></span></td>
                         <?php endif; ?>
-                        <td><span class="badge bg-secondary-subtle text-light-emphasis"><?= htmlspecialchars($p['category_name'] ?? 'Sin categoría') ?></span></td>
-                        <td class="text-end text-warning"><?= format_currency($p['purchase_price']) ?></td>
-                        <td class="text-end text-warning"><?= format_currency($p['sale_price']) ?></td>
-                        <td class="text-end <?= $stockClass ?>"><?= $p['stock'] ?></td>
-                        <td class="text-end <?= $profitClass ?>"><?= format_currency($profit) ?></td>
+                        <td><span class="badge bg-secondary-subtle" style="color:#ffffff !important;"><?= htmlspecialchars($p['category_name'] ?? 'Sin categoría') ?></span></td>
+                        <td class="text-end" style="color:#ffc107 !important;"><?= format_currency($p['purchase_price']) ?></td>
+                        <td class="text-end" style="color:#ffc107 !important;"><?= format_currency($p['sale_price']) ?></td>
+                        <td class="text-end <?= $stockClass ?>" style="<?= $p['stock'] == 0 ? 'color:#dc3545 !important;font-weight:bold' : ($p['stock'] <= 5 ? 'color:#ffc107 !important;font-weight:bold' : 'color:#ffffff !important') ?>"><?= $p['stock'] ?></td>
+                        <td class="text-end <?= $profitClass ?>" style="<?= $profit > 0 ? 'color:#198754 !important;font-weight:bold' : ($profit < 0 ? 'color:#dc3545 !important;font-weight:bold' : 'color:#6c757d !important') ?>"><?= format_currency($profit) ?></td>
                         <td>
                             <div class="d-flex gap-1 justify-content-end">
                                 <a href="<?= BASE_URL ?>/products/edit/<?= $p['id'] ?>"
