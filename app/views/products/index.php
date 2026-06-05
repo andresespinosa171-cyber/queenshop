@@ -104,7 +104,7 @@
                         <td>
                             <img src="<?= image_url($p['image']) ?>"
                                  alt="<?= htmlspecialchars($p['name']) ?>"
-                                 class="rounded border" style="width:48px;height:48px;object-fit:cover;">
+                                 class="product-img-clickable rounded border" style="width:48px;height:48px;object-fit:cover;">
                         </td>
                         <td class="fw-medium"><?= htmlspecialchars($p['name']) ?></td>
                         <td><span class="badge bg-secondary-subtle text-secondary-emphasis"><?= htmlspecialchars($p['category_name'] ?? 'Sin categoría') ?></span></td>

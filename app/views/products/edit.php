@@ -72,7 +72,7 @@
                         <?php if ($product['image']): ?>
                             <div class="mb-2">
                                 <img src="<?= image_url($product['image']) ?>"
-                                     class="rounded border" style="max-width:100px;max-height:100px;object-fit:cover;">
+                                     class="product-img-clickable rounded border" style="max-width:100px;max-height:100px;object-fit:cover;">
                                 <div class="form-text">Imagen actual. Subí una nueva para reemplazarla.</div>
                             </div>
                         <?php endif; ?>

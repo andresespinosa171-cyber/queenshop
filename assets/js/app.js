@@ -489,3 +489,62 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+/* ─── Product Image Lightbox ─────────────────────────────── */
+(function() {
+    const overlay = document.getElementById('productLightbox');
+    const lightboxImg = document.getElementById('lightboxImage');
+    const closeBtn = document.getElementById('lightboxClose');
+    const zoomBtn = document.getElementById('lightboxZoom');
+    let zoomed = false;
+
+    if (!overlay) return;
+
+    // Open — click on any .product-img-clickable
+    document.addEventListener('click', function(e) {
+        const trigger = e.target.closest('.product-img-clickable');
+        if (!trigger) return;
+        e.preventDefault();
+
+        const img = trigger.tagName === 'IMG' ? trigger : trigger.querySelector('img');
+        if (!img) return;
+
+        const src = img.getAttribute('src') || img.getAttribute('data-full') || '';
+        if (!src || src.includes('no-image')) return;
+
+        lightboxImg.src = src;
+        lightboxImg.style.transform = 'scale(1)';
+        zoomed = false;
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    // Close
+    function closeLightbox() {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+        lightboxImg.src = '';
+    }
+
+    if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closeLightbox();
+    });
+
+    // ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) {
+            closeLightbox();
+        }
+    });
+
+    // Zoom toggle
+    if (zoomBtn) {
+        zoomBtn.addEventListener('click', function() {
+            zoomed = !zoomed;
+            lightboxImg.style.transform = zoomed ? 'scale(2)' : 'scale(1)';
+            lightboxImg.style.transition = 'transform var(--transition-base)';
+            zoomBtn.textContent = zoomed ? '\uD83D\uDD0D 1\u00D7' : '\uD83D\uDD0D 2\u00D7';
+        });
+    }
+})();

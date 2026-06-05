@@ -12,7 +12,7 @@
 
 Decision needed before apply: Yes
 Chained PRs recommended: Yes
-Chain strategy: pending
+Chain strategy: stacked-to-main (PR 3/3)
 800-line budget risk: High
 
 ## Phase 1: Foundation
@@ -51,15 +51,15 @@ Chain strategy: pending
 - [x] 4.2 Seed WolfStor shoe cats + update QueenShop seed cats with company_id=1
 - [x] 4.3 `Product::getAllCategories()` — accept ?int $companyId param, filter by it
 - [x] 4.4 `ProductController::index()`, `create()`, `edit()` — pass current_company_id() to getAllCategories()
-- [ ] 4.5 Lightbox CSS in style.css: overlay, centered img, close btn, zoom toggle
-- [ ] 4.6 Lightbox JS in app.js: click handler, ESC/click-outside close, zoom fit↔2x
-- [ ] 4.7 Lightbox HTML overlay in main.php; add .product-img-clickable to product views
+- [x] 4.5 Lightbox CSS in style.css: overlay, centered img, close btn, zoom toggle
+- [x] 4.6 Lightbox JS in app.js: click handler, ESC/click-outside close, zoom fit↔2x
+- [x] 4.7 Lightbox HTML overlay in main.php; add .product-img-clickable to product views
 - [x] 4.8 Update schema.sql + schema.sqlite.sql — category company_id + seeds
 
 ## Phase 5: Animations & Polish
 
-- [ ] 5.1 Apply `.fade-in` to `<main>` in main.php — on-load fade
-- [ ] 5.2 `.card-hover-lift`: translateY(-4px) + shadow on card hover
-- [ ] 5.3 `.btn-hover-scale`: transform scale(1.03) on button hover
-- [ ] 5.4 `.stagger-row`: incremental animation-delay on table rows
-- [ ] 5.5 Verify all transitions use transform/opacity only — zero layout shift
+- [x] 5.1 Apply `.fade-in` to `<main>` in main.php — on-load fade
+- [x] 5.2 `.card-hover-lift`: translateY(-4px) + shadow on card hover
+- [x] 5.3 `.btn-hover-scale`: transform scale(1.03) on button hover
+- [x] 5.4 `.stagger-row`: incremental animation-delay on table rows
+- [x] 5.5 Verify all transitions use transform/opacity only — zero layout shift

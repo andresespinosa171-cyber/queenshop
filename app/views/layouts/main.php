@@ -128,7 +128,7 @@ $allCompanies = $companyModel->getAll();
     </div>
 
     <!-- ─── Page Content ───────────────────────────────────────── -->
-    <main class="container mt-3 mb-5">
+    <main class="container fade-in mt-3 mb-5">
         <?= $content ?>
     </main>
 
@@ -138,6 +138,13 @@ $allCompanies = $companyModel->getAll();
             <i class="bi bi-shop"></i> <?= htmlspecialchars(current_store_name()) ?> &mdash; <?= date('Y') ?>
         </div>
     </footer>
+
+    <!-- ─── Product Image Lightbox ─────────────────────────── -->
+    <div id="productLightbox" class="lightbox-overlay" role="dialog" aria-label="Vista ampliada de la imagen">
+        <button id="lightboxClose" class="lightbox-close" aria-label="Cerrar">&times;</button>
+        <img id="lightboxImage" src="" alt="Vista ampliada">
+        <button id="lightboxZoom" class="lightbox-zoom">&#x1F50D; 2&times;</button>
+    </div>
 
     <script>const BASE_URL = '<?= BASE_URL ?>';</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

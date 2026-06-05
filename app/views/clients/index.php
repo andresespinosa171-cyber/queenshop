@@ -8,7 +8,7 @@
 <!-- ─── Debt Total ──────────────────────────────────────────── -->
 <div class="row g-3 mb-4">
     <div class="col-12 col-md-4">
-        <div class="card border-warning shadow-sm">
+        <div class="card card-hover-lift border-warning shadow-sm">
             <div class="card-body text-center">
                 <div class="text-warning mb-1"><i class="bi bi-currency-dollar fs-3"></i></div>
                 <h6 class="card-title text-muted small text-uppercase">Total que me deben</h6>

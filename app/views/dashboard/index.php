@@ -23,7 +23,7 @@
 <!-- ─── KPI Cards ────────────────────────────────────────────── -->
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
-        <div class="card border-warning shadow-sm h-100">
+        <div class="card card-hover-lift border-warning shadow-sm h-100">
             <div class="card-body text-center">
                 <div class="text-warning mb-2"><i class="bi bi-currency-dollar fs-2"></i></div>
                 <h6 class="card-title text-muted small text-uppercase">Ventas Totales</h6>
@@ -32,7 +32,7 @@
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card border-warning shadow-sm h-100">
+        <div class="card card-hover-lift border-warning shadow-sm h-100">
             <div class="card-body text-center">
                 <div class="text-warning mb-2"><i class="bi bi-graph-up-arrow fs-2"></i></div>
                 <h6 class="card-title text-muted small text-uppercase">Ganancia Bruta</h6>
@@ -44,7 +44,7 @@
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card border-warning shadow-sm h-100">
+        <div class="card card-hover-lift border-warning shadow-sm h-100">
             <div class="card-body text-center">
                 <div class="text-warning mb-2"><i class="bi bi-cart-x fs-2"></i></div>
                 <h6 class="card-title text-muted small text-uppercase">Costo en Stock</h6>
@@ -54,7 +54,7 @@
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card border-warning shadow-sm h-100">
+        <div class="card card-hover-lift border-warning shadow-sm h-100">
             <div class="card-body text-center">
                 <div class="text-warning mb-2"><i class="bi bi-receipt fs-2"></i></div>
                 <h6 class="card-title text-muted small text-uppercase">Ventas Hoy</h6>
@@ -68,7 +68,7 @@
 <!-- ─── Second Row: Summary ──────────────────────────────────── -->
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
-        <div class="card border-0 shadow-sm">
+        <div class="card card-hover-lift border-0 shadow-sm">
             <div class="card-body text-center py-3">
                 <div class="text-muted small">Ventas realizadas</div>
                 <span class="fs-5 fw-bold"><?= $saleCount ?></span>
@@ -76,7 +76,7 @@
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card border-0 shadow-sm">
+        <div class="card card-hover-lift border-0 shadow-sm">
             <div class="card-body text-center py-3">
                 <div class="text-muted small">Costo total (mercad.)</div>
                 <span class="fs-5 fw-bold"><?= format_currency($totalCost) ?></span>
@@ -84,7 +84,7 @@
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card border-0 shadow-sm">
+        <div class="card card-hover-lift border-0 shadow-sm">
             <div class="card-body text-center py-3">
                 <div class="text-muted small">Descuentos otorgados</div>
                 <span class="fs-5 fw-bold text-danger"><?= format_currency($totalDiscount) ?></span>
@@ -92,7 +92,7 @@
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card border-0 shadow-sm">
+        <div class="card card-hover-lift border-0 shadow-sm">
             <div class="card-body text-center py-3">
                 <div class="text-muted small">Productos en stock</div>
                 <span class="fs-5 fw-bold"><?= count($lowStock) + count($outOfStock) ?> bajo</span>
