@@ -9,7 +9,7 @@
 
 QueenShop MVC — Sistema multi-empresa de gestión de tienda de mascotas.
 
-- **Stack**: PHP 8.2, SQLite (PDO), Bootstrap 5.3, Chart.js, Bootstrap Icons
+- **Stack**: PHP 8.2, SQLite (PDO) con soporte MySQL via config/db.mysql.php, Bootstrap 5.3, Chart.js, Bootstrap Icons
 - **Arquitectura**: MVC custom (Router, Controller, Model base), sin framework
 - **Idioma**: Español (Rioplatense)
 - **Tema**: Oscuro/Fondo #121212, texto blanco, amarillo primario, verde dinero positivo
@@ -123,4 +123,4 @@ php -S localhost:8080 -t /project/workspace
 
 ## Última actualización
 
-2026-05-27 — Sesión 3: overhaul visual completo a tema oscuro — fondo #121212, texto blanco, amarillo como color principal (#ffc107), verde para dinero positivo (#28a745), rojo para pérdidas. Login/register centrados con inputs grandes.
+2026-06-05 — Sesión 4: fix conexión MySQL (fallback a SQLite cuando MySQL no está disponible), verificación general del sitio.
