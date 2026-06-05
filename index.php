@@ -55,6 +55,17 @@ $router->post('/products/update/{id}', 'ProductController@update');
 $router->post('/products/delete/{id}', 'ProductController@destroy');
 $router->post('/products/restock/{id}', 'ProductController@restock');
 
+// Clients
+$router->get('/clients',           'ClientController@index');
+$router->get('/clients/create',     'ClientController@create');
+$router->post('/clients/store',     'ClientController@store');
+$router->get('/clients/{id}',       'ClientController@show');
+$router->get('/clients/edit/{id}',  'ClientController@edit');
+$router->post('/clients/update/{id}', 'ClientController@update');
+$router->post('/clients/delete/{id}', 'ClientController@destroy');
+$router->post('/clients/pay/{id}',    'ClientController@pay');
+$router->post('/clients/adjust/{id}', 'ClientController@adjust');
+
 // Sales
 $router->get('/sales',         'SaleController@index');
 $router->get('/sales/create',   'SaleController@create');

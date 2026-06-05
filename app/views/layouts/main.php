@@ -38,6 +38,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], BASE_URL . '/client') ? 'active' : '' ?>"
+                           href="<?= BASE_URL ?>/clients">
+                            <i class="bi bi-people-fill"></i> Clientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], BASE_URL . '/sale') ? 'active' : '' ?>"
                            href="<?= BASE_URL ?>/sales">
                             <i class="bi bi-cart-fill"></i> Ventas

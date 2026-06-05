@@ -29,6 +29,97 @@ function getDB(): PDO {
                 $db->exec($schema);
             }
         }
+
+        // Auto-migrate existing databases
+        runMigrations($db);
     }
     return $db;
+}
+
+/** Run pending migrations — safe for existing DBs */
+function runMigrations(PDO $db): void {
+    $isMySQL = $db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql';
+
+    // Crear tabla de control de migraciones
+    if ($isMySQL) {
+        $db->exec("CREATE TABLE IF NOT EXISTS _migrations (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL UNIQUE,
+            applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )");
+    } else {
+        $db->exec("CREATE TABLE IF NOT EXISTS _migrations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE,
+            applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )");
+    }
+
+    $applied = $db->query("SELECT name FROM _migrations")->fetchAll(PDO::FETCH_COLUMN);
+
+    $migrations = [
+        '001_clients' => function () use ($db, $isMySQL) {
+            if ($isMySQL) {
+                $db->exec("CREATE TABLE IF NOT EXISTS clients (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    company_id INT NOT NULL DEFAULT 1,
+                    name VARCHAR(200) NOT NULL,
+                    phone VARCHAR(50) DEFAULT '',
+                    email VARCHAR(200) DEFAULT '',
+                    address TEXT DEFAULT '',
+                    notes TEXT DEFAULT '',
+                    total_debt DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+                )");
+            } else {
+                $db->exec("CREATE TABLE IF NOT EXISTS clients (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    company_id INTEGER NOT NULL DEFAULT 1,
+                    name VARCHAR(200) NOT NULL,
+                    phone VARCHAR(50) DEFAULT '',
+                    email VARCHAR(200) DEFAULT '',
+                    address TEXT DEFAULT '',
+                    notes TEXT DEFAULT '',
+                    total_debt DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+                )");
+            }
+        },
+        '002_debt_payments' => function () use ($db, $isMySQL) {
+            if ($isMySQL) {
+                $db->exec("CREATE TABLE IF NOT EXISTS debt_payments (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    client_id INT NOT NULL,
+                    amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                    type VARCHAR(20) NOT NULL DEFAULT 'payment',
+                    notes TEXT DEFAULT '',
+                    payment_date DATE NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+                )");
+            } else {
+                $db->exec("CREATE TABLE IF NOT EXISTS debt_payments (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    client_id INTEGER NOT NULL,
+                    amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                    type TEXT NOT NULL DEFAULT 'payment',
+                    notes TEXT DEFAULT '',
+                    payment_date DATE NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+                )");
+            }
+        },
+    ];
+
+    foreach ($migrations as $name => $callback) {
+        if (!in_array($name, $applied, true)) {
+            $callback();
+            $db->prepare("INSERT INTO _migrations (name) VALUES (?)")->execute([$name]);
+        }
+    }
 }

@@ -58,6 +58,13 @@ class Sale extends Model {
         return $this->query($sql, $params)->fetchAll();
     }
 
+    public function getByClient(int|string $clientId): array {
+        return $this->query(
+            "SELECT s.* FROM sales s WHERE s.client_id = ? ORDER BY s.created_at DESC",
+            [$clientId]
+        )->fetchAll();
+    }
+
     public function findWithItems(int|string $id): array|false {
         $sale = $this->query(
             "SELECT * FROM sales WHERE id = ?",
