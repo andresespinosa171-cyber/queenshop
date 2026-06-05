@@ -1,5 +1,8 @@
 intelephense
 
+# Dependencies
+node_modules/
+
 # SQLite database (recreated from schema.sql)
 database/petshop.db
 
