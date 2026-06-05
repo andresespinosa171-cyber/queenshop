@@ -140,14 +140,11 @@ CREATE TABLE IF NOT EXISTS return_items (
 -- ─── Seed data ───────────────────────────────────────────────
 
 -- Empresas de demostración
-INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (1, 'QueenShop Norte', 'QueenShop Norte', 'queenshop', 'logo.svg', '#ffc107', 'Tienda de mascotas');
-INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (2, 'QueenShop Sur', 'QueenShop Sur', 'queenshop', 'logo.svg', '#ffc107', 'Tienda de mascotas');
-INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (3, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos');
+INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (1, 'QueenShop', 'QueenShop', 'queenshop', 'logo.svg', '#ffc107', 'Tienda de mascotas');
+INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (2, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos');
 
 -- Usuarios de demostración (contraseña = 123456 con BCrypt)
-INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (1, 1, 'norte', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'user');
-INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (2, 2, 'sur', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'user');
-INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (3, 1, 'admin', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'admin');
+INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (1, 1, 'admin', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'admin');
 
 -- Categorías por defecto (QueenShop = company_id 1)
 INSERT OR IGNORE INTO categories (id, name, company_id) VALUES (1, 'Alimentos', 1);
@@ -158,21 +155,16 @@ INSERT OR IGNORE INTO categories (id, name, company_id) VALUES (5, 'Medicamentos
 INSERT OR IGNORE INTO categories (id, name, company_id) VALUES (6, 'Ropa', 1);
 INSERT OR IGNORE INTO categories (id, name, company_id) VALUES (7, 'Otros', 1);
 
--- Categorías WolfStor (company_id 3)
-INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Sneakers', 3);
-INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Botas', 3);
-INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Zapatillas', 3);
-INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Sandalias', 3);
-INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Zapatos de Vestir', 3);
-INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Deportivos', 3);
-INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Ojotas', 3);
-INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Otros', 3);
+-- Categorías WolfStor (company_id 2)
+INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Sneakers', 2);
+INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Botas', 2);
+INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Zapatillas', 2);
+INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Sandalias', 2);
+INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Zapatos de Vestir', 2);
+INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Deportivos', 2);
+INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Ojotas', 2);
+INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Otros', 2);
 
--- Acceso a empresas
+-- Acceso a empresas (admin tiene acceso a ambas tiendas)
 INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 1, 'admin');
-INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 2, 'user');
-INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 3, 'user');
-INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (2, 2, 'admin');
-INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (3, 1, 'admin');
-INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (3, 2, 'user');
-INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (3, 3, 'user');
+INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 2, 'admin');

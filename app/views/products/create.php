@@ -40,9 +40,9 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="col-6 col-md-3">
-                            <label class="form-label fw-medium text-light">Género</label>
-                            <div class="d-flex gap-3 mt-1">
+                        <div class="col-12 col-md-3">
+                            <label class="form-label fw-medium text-light mb-2">Género</label>
+                            <div class="d-flex flex-wrap gap-3">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="gender" id="genM" value="Hombre">
                                     <label class="form-check-label text-light" for="genM">Hombre</label>
@@ -57,9 +57,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6 col-md-3">
-                            <label class="form-label fw-medium text-light">Tipo</label>
-                            <div class="d-flex gap-3 mt-1">
+                        <div class="col-12 col-md-3">
+                            <label class="form-label fw-medium text-light mb-2">Tipo</label>
+                            <div class="d-flex flex-wrap gap-3">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="boot_type" id="btBota" value="Bota">
                                     <label class="form-check-label text-light" for="btBota">Bota</label>
