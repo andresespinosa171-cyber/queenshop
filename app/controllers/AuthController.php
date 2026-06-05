@@ -130,6 +130,11 @@ class AuthController extends Controller {
             $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 10]);
             $stmt = $db->prepare("INSERT INTO users (company_id, username, password) VALUES (?, ?, ?)");
             $stmt->execute([$companyId, $username, $hash]);
+            $userId = $db->lastInsertId();
+
+            // Grant access to the new company via user_companies pivot
+            $stmt = $db->prepare("INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (?, ?, 'admin')");
+            $stmt->execute([$userId, $companyId]);
 
             $db->commit();
 
