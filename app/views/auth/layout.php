@@ -9,16 +9,16 @@
     <link rel="icon" type="image/svg+xml" href="<?= BASE_URL ?>/assets/img/<?= htmlspecialchars($store['logo'] ?? 'logo.svg') ?>">
     <link href="<?= BASE_URL ?>/assets/css/style.css" rel="stylesheet">
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 theme-<?= htmlspecialchars(is_array($store) ? ($store['theme'] ?? 'queenshop') : 'queenshop') ?>">
 
     <!-- ─── Back to Store Selection ─────────────────────────── -->
-    <?php if (!empty($store)): ?>
+    <?php if (is_array($store)): ?>
     <div class="position-absolute top-0 start-0 z-3 p-3">
         <a href="<?= BASE_URL ?>/"
-           class="btn btn-sm d-inline-flex align-items-center gap-1"
-           style="background: <?= htmlspecialchars($store['primary_color'] ?? '#ffc107') ?>; color: #121212; border-radius: 50px; padding: 6px 16px; font-weight: 600;">
-            <i class="bi bi-arrow-left"></i>
-            <span>Volver</span>
+           class="btn btn-sm d-inline-flex align-items-center gap-1 fw-bold shadow-sm"
+           style="background: <?= htmlspecialchars($store['primary_color'] ?? '#ffc107') ?>; color: #121212; border-radius: 50px; padding: 8px 20px; font-weight: 700; font-size: 0.9rem; border: 2px solid rgba(255,255,255,0.15);">
+            <i class="bi bi-arrow-left" style="font-size: 1.1rem;"></i>
+            <span>Volver al menú</span>
         </a>
     </div>
     <?php endif; ?>

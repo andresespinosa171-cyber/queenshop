@@ -47,26 +47,26 @@
     </div>
 <?php else: ?>
     <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
+        <table class="table table-dark table-hover align-middle">
+            <thead class="table-dark" style="border-bottom: 2px solid #ffc10733;">
                 <tr>
-                    <th>Nombre</th>
-                    <th>Teléfono</th>
-                    <th>Email</th>
-                    <th class="text-end">Debe</th>
+                    <th class="text-light">Nombre</th>
+                    <th class="text-light">Teléfono</th>
+                    <th class="text-light">Email</th>
+                    <th class="text-end text-light">Debe</th>
                     <th style="width:120px"></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($clients as $c): ?>
                     <tr>
-                        <td class="fw-medium">
-                            <a href="<?= BASE_URL ?>/clients/<?= $c['id'] ?>" class="text-decoration-none">
+                        <td class="fw-medium text-light">
+                            <a href="<?= BASE_URL ?>/clients/<?= $c['id'] ?>" class="text-decoration-none text-light">
                                 <?= htmlspecialchars($c['name']) ?>
                             </a>
                         </td>
-                        <td><?= htmlspecialchars($c['phone'] ?: '—') ?></td>
-                        <td><?= htmlspecialchars($c['email'] ?: '—') ?></td>
+                        <td class="text-light"><?= htmlspecialchars($c['phone'] ?: '—') ?></td>
+                        <td class="text-light"><?= htmlspecialchars($c['email'] ?: '—') ?></td>
                         <td class="text-end <?= (float)$c['total_debt'] > 0 ? 'text-danger fw-bold' : 'text-muted' ?>">
                             <?= format_currency((float)$c['total_debt']) ?>
                         </td>
