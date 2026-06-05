@@ -32,7 +32,9 @@ function getDB(): PDO {
             $db->exec('PRAGMA foreign_keys=ON');
             if ($isNew) {
                 $schema = file_get_contents(__DIR__ . '/../database/schema.sqlite.sql');
+                $db->exec('PRAGMA foreign_keys=OFF');
                 $db->exec($schema);
+                $db->exec('PRAGMA foreign_keys=ON');
             }
         }
 

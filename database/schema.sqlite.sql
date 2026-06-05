@@ -1,5 +1,6 @@
 -- Esquema de base de datos para QueenShop MVC (SQLite)
 -- Usado para desarrollo local con sqlite
+-- Ordenado: tablas padre primero para evitar errores de FK
 
 CREATE TABLE IF NOT EXISTS companies (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -10,6 +11,30 @@ CREATE TABLE IF NOT EXISTS companies (
     primary_color VARCHAR(7) NOT NULL DEFAULT '#ffc107',
     description TEXT DEFAULT '',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    company_id INTEGER NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS clients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    company_id INTEGER NOT NULL DEFAULT 1,
+    name VARCHAR(200) NOT NULL,
+    phone VARCHAR(50) DEFAULT '',
+    email VARCHAR(200) DEFAULT '',
+    address TEXT DEFAULT '',
+    notes TEXT DEFAULT '',
+    total_debt DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS categories (
@@ -48,6 +73,17 @@ CREATE TABLE IF NOT EXISTS products (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS debt_payments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id INTEGER NOT NULL,
+    amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    type TEXT NOT NULL DEFAULT 'payment',
+    notes TEXT DEFAULT '',
+    payment_date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS sales (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
@@ -77,31 +113,6 @@ CREATE TABLE IF NOT EXISTS sale_items (
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
-CREATE TABLE IF NOT EXISTS clients (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    company_id INTEGER NOT NULL DEFAULT 1,
-    name VARCHAR(200) NOT NULL,
-    phone VARCHAR(50) DEFAULT '',
-    email VARCHAR(200) DEFAULT '',
-    address TEXT DEFAULT '',
-    notes TEXT DEFAULT '',
-    total_debt DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS debt_payments (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    client_id INTEGER NOT NULL,
-    amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    type TEXT NOT NULL DEFAULT 'payment',
-    notes TEXT DEFAULT '',
-    payment_date DATE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS returns (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     sale_id INTEGER NOT NULL,
@@ -126,15 +137,17 @@ CREATE TABLE IF NOT EXISTS return_items (
     FOREIGN KEY (return_id) REFERENCES returns(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    company_id INTEGER NOT NULL,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role TEXT NOT NULL DEFAULT 'user',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
-);
+-- ─── Seed data ───────────────────────────────────────────────
+
+-- Empresas de demostración
+INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (1, 'QueenShop Norte', 'QueenShop Norte', 'queenshop', 'logo.svg', '#ffc107', 'Tienda de mascotas');
+INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (2, 'QueenShop Sur', 'QueenShop Sur', 'queenshop', 'logo.svg', '#ffc107', 'Tienda de mascotas');
+INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (3, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos');
+
+-- Usuarios de demostración (contraseña = 123456 con BCrypt)
+INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (1, 1, 'norte', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'user');
+INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (2, 2, 'sur', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'user');
+INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (3, 1, 'admin', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'admin');
 
 -- Categorías por defecto (QueenShop = company_id 1)
 INSERT OR IGNORE INTO categories (id, name, company_id) VALUES (1, 'Alimentos', 1);
@@ -155,17 +168,7 @@ INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Deportivos', 3);
 INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Ojotas', 3);
 INSERT OR IGNORE INTO categories (name, company_id) VALUES ('Otros', 3);
 
--- Seed: Empresas de demostración
-INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (1, 'QueenShop Norte', 'QueenShop Norte', 'queenshop', 'logo.svg', '#ffc107', 'Tienda de mascotas');
-INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (2, 'QueenShop Sur', 'QueenShop Sur', 'queenshop', 'logo.svg', '#ffc107', 'Tienda de mascotas');
-INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (3, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos');
-
--- Seed: Usuarios de demostración (contraseña = 123456 con BCrypt)
-INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (1, 1, 'norte', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'user');
-INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (2, 2, 'sur', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'user');
-INSERT OR IGNORE INTO users (id, company_id, username, password, role) VALUES (3, 1, 'admin', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'admin');
-
--- Seed: Acceso a empresas para usuario admin (id=3) a todas, usuario norte (id=1) solo QueenShop
+-- Acceso a empresas
 INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 1, 'admin');
 INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 2, 'user');
 INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 3, 'user');
