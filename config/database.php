@@ -181,30 +181,32 @@ function runMigrations(PDO $db): void {
                 )");
             }
         },
-        '006_user_companies' => function () use ($db, $isMySQL) {
+        '005_add_company_branding' => function () use ($db, $isMySQL) {
             if ($isMySQL) {
-                $db->exec("CREATE TABLE IF NOT EXISTS user_companies (
-                    user_id INT NOT NULL,
-                    company_id INT NOT NULL,
-                    role VARCHAR(50) NOT NULL DEFAULT 'user',
-                    PRIMARY KEY (user_id, company_id),
-                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-                    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
-                )");
-                $db->exec("INSERT IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 1, 'admin'), (1, 2, 'user'), (1, 3, 'user')");
+                try { $db->exec("ALTER TABLE companies ADD COLUMN theme VARCHAR(50) NOT NULL DEFAULT 'queenshop'"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE companies ADD COLUMN store_name VARCHAR(200) NOT NULL DEFAULT 'QueenShop'"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE companies ADD COLUMN logo VARCHAR(255) NOT NULL DEFAULT 'logo.svg'"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE companies ADD COLUMN primary_color VARCHAR(7) NOT NULL DEFAULT '#ffc107'"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE companies ADD COLUMN description TEXT DEFAULT ''"); } catch (Exception $e) {}
+                // Seed WolfStor if not exists
+                $cnt = $db->query("SELECT COUNT(*) FROM companies")->fetchColumn();
+                if ($cnt < 3) {
+                    $db->exec("INSERT IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (3, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos')");
+                }
             } else {
-                $db->exec("CREATE TABLE IF NOT EXISTS user_companies (
-                    user_id INTEGER NOT NULL,
-                    company_id INTEGER NOT NULL,
-                    role TEXT NOT NULL DEFAULT 'user',
-                    PRIMARY KEY (user_id, company_id),
-                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-                    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
-                )");
-                $db->exec("INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 1, 'admin'), (1, 2, 'user'), (1, 3, 'user')");
+                $info = $db->query("PRAGMA table_info(companies)")->fetchAll(PDO::FETCH_COLUMN, 1);
+                if (!in_array('theme', $info)) $db->exec("ALTER TABLE companies ADD COLUMN theme TEXT NOT NULL DEFAULT 'queenshop'");
+                if (!in_array('store_name', $info)) $db->exec("ALTER TABLE companies ADD COLUMN store_name TEXT NOT NULL DEFAULT 'QueenShop'");
+                if (!in_array('logo', $info)) $db->exec("ALTER TABLE companies ADD COLUMN logo TEXT NOT NULL DEFAULT 'logo.svg'");
+                if (!in_array('primary_color', $info)) $db->exec("ALTER TABLE companies ADD COLUMN primary_color TEXT NOT NULL DEFAULT '#ffc107'");
+                if (!in_array('description', $info)) $db->exec("ALTER TABLE companies ADD COLUMN description TEXT DEFAULT ''");
+                $cnt = $db->query("SELECT COUNT(*) FROM companies")->fetchColumn();
+                if ($cnt < 3) {
+                    $db->exec("INSERT INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (3, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos')");
+                }
             }
         },
-        '005_add_company_branding' => function () use ($db, $isMySQL) {
+        '006_user_companies' => function () use ($db, $isMySQL) {
             if ($isMySQL) {
                 try { $db->exec("ALTER TABLE companies ADD COLUMN theme VARCHAR(50) NOT NULL DEFAULT 'queenshop'"); } catch (Exception $e) {}
                 try { $db->exec("ALTER TABLE companies ADD COLUMN store_name VARCHAR(200) NOT NULL DEFAULT 'QueenShop'"); } catch (Exception $e) {}
@@ -245,6 +247,23 @@ function runMigrations(PDO $db): void {
                 $db->exec("INSERT OR IGNORE INTO categories (name, company_id) VALUES
                     ('Sneakers', 3), ('Botas', 3), ('Zapatillas', 3), ('Sandalias', 3),
                     ('Zapatos de Vestir', 3), ('Deportivos', 3), ('Ojotas', 3), ('Otros', 3)");
+            }
+        },
+        '005b_seed_wolfstor' => function () use ($db, $isMySQL) {
+            // Seed WolfStor for databases where migration 005 already ran without the seed
+            $cnt = $db->query("SELECT COUNT(*) FROM companies")->fetchColumn();
+            if ($cnt < 3) {
+                if ($isMySQL) {
+                    $db->exec("INSERT IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (3, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos')");
+                } else {
+                    $db->exec("INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (3, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos')");
+                }
+            }
+            // Also ensure user_companies has WolfStor access for existing users
+            try {
+                $db->exec("INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 3, 'user'), (3, 3, 'user')");
+            } catch (Exception $e) {
+                // user_companies table might not exist yet — that's fine
             }
         },
     ];

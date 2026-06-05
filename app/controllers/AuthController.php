@@ -37,8 +37,9 @@ class AuthController extends Controller {
         $_SESSION['role'] = $user['role'];
 
         // Load full company branding into session
-        $db2 = getDB();
-        $company = $db2->query("SELECT * FROM companies WHERE id = ?", [$user['company_id']])->fetch();
+        $stmt2 = getDB()->prepare("SELECT * FROM companies WHERE id = ?");
+        $stmt2->execute([$user['company_id']]);
+        $company = $stmt2->fetch();
         $_SESSION['store_name'] = $company['store_name'] ?? 'QueenShop';
         $_SESSION['logo'] = $company['logo'] ?? 'logo.svg';
         $_SESSION['theme'] = $company['theme'] ?? 'queenshop';
