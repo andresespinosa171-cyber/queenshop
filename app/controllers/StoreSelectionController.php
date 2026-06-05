@@ -19,6 +19,6 @@ class StoreSelectionController extends Controller {
         $this->view('store-selection/index', [
             'stores' => $stores,
             'title'  => 'Elegí tu tienda',
-        ]);
+        ], 'layouts/landing');
     }
 }

@@ -300,6 +300,31 @@ function runMigrations(PDO $db): void {
                 if (!in_array('boot_type', $info)) $db->exec("ALTER TABLE products ADD COLUMN boot_type TEXT NOT NULL DEFAULT ''");
             }
         },
+        '009_cleanup_companies' => function () use ($db, $isMySQL) {
+            // Elimina empresas duplicadas (QueenShop Norte/Sur) y deja solo:
+            //   id=1 → QueenShop
+            //   id=2 → WolfStor
+            $all = $db->query("SELECT id, name FROM companies ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
+            $idsToDelete = [];
+            foreach ($all as $c) {
+                if ($c['id'] == 1) continue;
+                if ($c['id'] == 2) continue;
+                $idsToDelete[] = (int)$c['id'];
+            }
+            if (!empty($idsToDelete)) {
+                $in = implode(',', $idsToDelete);
+                foreach (['user_companies', 'categories', 'products', 'sales', 'returns'] as $table) {
+                    try { $db->exec("UPDATE {$table} SET company_id = 1 WHERE company_id IN ({$in})"); } catch (Exception $e) {}
+                }
+                $db->exec("DELETE FROM companies WHERE id IN ({$in})");
+            }
+            // Asegurar que WolfStor existe
+            $ws = $db->query("SELECT id FROM companies WHERE id = 2")->fetchColumn();
+            if (!$ws) {
+                $db->exec("INSERT OR IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (2, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos')");
+                try { $db->exec("INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 2, 'admin')"); } catch (Exception $e) {}
+            }
+        },
     ];
 
     foreach ($migrations as $name => $callback) {
