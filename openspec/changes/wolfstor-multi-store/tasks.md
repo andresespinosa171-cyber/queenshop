@@ -39,22 +39,22 @@ Chain strategy: pending
 
 ## Phase 3: Store Switching
 
-- [ ] 3.1 Migration 006 in `database.php`: CREATE TABLE user_companies (user_id,company_id UNIQUE)
-- [ ] 3.2 Migration 006b: seed user_companies — user id=1 access to all companies
-- [ ] 3.3 Create `SwitchController.php`: GET /switch-store/{id} — validates user_companies access, rebinds session, redirects /
-- [ ] 3.4 Add route `$router->get('/switch-store/{id}', 'SwitchController@switch')` in index.php
-- [ ] 3.5 Navbar in main.php: store-switcher dropdown, visible only if count(current_user_companies()) > 1
+- [x] 3.1 Migration 006 in `database.php`: CREATE TABLE user_companies (user_id,company_id UNIQUE)
+- [x] 3.2 Migration 006b: seed user_companies — user id=1 access to all companies
+- [x] 3.3 Create `SwitchController.php`: GET /switch-store/{id} — validates user_companies access, rebinds session, redirects /
+- [x] 3.4 Add route `$router->get('/switch-store/{id}', 'SwitchController@switch')` in index.php
+- [x] 3.5 Navbar in main.php: store-switcher dropdown, visible only if count($allCompanies) > 1
 
 ## Phase 4: Categories & Lightbox
 
-- [ ] 4.1 Migration 007: ALTER categories ADD COLUMN company_id INT DEFAULT 1
-- [ ] 4.2 Seed WolfStor shoe cats + update QueenShop seed cats with company_id=1
-- [ ] 4.3 `Product::getAllCategories()` — accept ?int $companyId param, filter by it
-- [ ] 4.4 `ProductController::index()`, `create()`, `edit()` — pass current_company_id() to getAllCategories()
+- [x] 4.1 Migration 007: ALTER categories ADD COLUMN company_id INT DEFAULT 1
+- [x] 4.2 Seed WolfStor shoe cats + update QueenShop seed cats with company_id=1
+- [x] 4.3 `Product::getAllCategories()` — accept ?int $companyId param, filter by it
+- [x] 4.4 `ProductController::index()`, `create()`, `edit()` — pass current_company_id() to getAllCategories()
 - [ ] 4.5 Lightbox CSS in style.css: overlay, centered img, close btn, zoom toggle
 - [ ] 4.6 Lightbox JS in app.js: click handler, ESC/click-outside close, zoom fit↔2x
 - [ ] 4.7 Lightbox HTML overlay in main.php; add .product-img-clickable to product views
-- [ ] 4.8 Update schema.sql + schema.sqlite.sql — category company_id + seeds
+- [x] 4.8 Update schema.sql + schema.sqlite.sql — category company_id + seeds
 
 ## Phase 5: Animations & Polish
 

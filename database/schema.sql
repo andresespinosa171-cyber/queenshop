@@ -15,7 +15,19 @@ CREATE TABLE IF NOT EXISTS companies (
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    company_id INT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS user_companies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    company_id INT NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'user',
+    UNIQUE KEY (user_id, company_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS products (
@@ -122,15 +134,20 @@ CREATE TABLE IF NOT EXISTS users (
     FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Categorías por defecto
-INSERT IGNORE INTO categories (id, name) VALUES
-(1, 'Alimentos'),
-(2, 'Juguetes'),
-(3, 'Higiene'),
-(4, 'Accesorios'),
-(5, 'Medicamentos'),
-(6, 'Ropa'),
-(7, 'Otros');
+-- Categorías por defecto (QueenShop = company_id 1)
+INSERT IGNORE INTO categories (id, name, company_id) VALUES
+(1, 'Alimentos', 1),
+(2, 'Juguetes', 1),
+(3, 'Higiene', 1),
+(4, 'Accesorios', 1),
+(5, 'Medicamentos', 1),
+(6, 'Ropa', 1),
+(7, 'Otros', 1);
+
+-- Categorías WolfStor (company_id 3)
+INSERT IGNORE INTO categories (name, company_id) VALUES
+('Sneakers', 3), ('Botas', 3), ('Zapatillas', 3), ('Sandalias', 3),
+('Zapatos de Vestir', 3), ('Deportivos', 3), ('Ojotas', 3), ('Otros', 3);
 
 -- Seed: Empresas de demostración
 INSERT IGNORE INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES
@@ -143,3 +160,9 @@ INSERT IGNORE INTO users (id, company_id, username, password, role) VALUES
 (1, 1, 'norte', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'user'),
 (2, 2, 'sur', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'user'),
 (3, 1, 'admin', '$2y$10$ASymD4N/TIeFjIaAlZ6R8ejsy4Rw84S5MG69r4mCRFMmvIERgpAN2', 'admin');
+
+-- Seed: Acceso a empresas para usuario admin (id=3) a todas, usuario norte (id=1) solo QueenShop
+INSERT IGNORE INTO user_companies (user_id, company_id, role) VALUES
+(1, 1, 'admin'), (1, 2, 'user'), (1, 3, 'user'),
+(2, 2, 'admin'),
+(3, 1, 'admin'), (3, 2, 'user'), (3, 3, 'user');

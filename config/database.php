@@ -181,6 +181,29 @@ function runMigrations(PDO $db): void {
                 )");
             }
         },
+        '006_user_companies' => function () use ($db, $isMySQL) {
+            if ($isMySQL) {
+                $db->exec("CREATE TABLE IF NOT EXISTS user_companies (
+                    user_id INT NOT NULL,
+                    company_id INT NOT NULL,
+                    role VARCHAR(50) NOT NULL DEFAULT 'user',
+                    PRIMARY KEY (user_id, company_id),
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+                )");
+                $db->exec("INSERT IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 1, 'admin'), (1, 2, 'user'), (1, 3, 'user')");
+            } else {
+                $db->exec("CREATE TABLE IF NOT EXISTS user_companies (
+                    user_id INTEGER NOT NULL,
+                    company_id INTEGER NOT NULL,
+                    role TEXT NOT NULL DEFAULT 'user',
+                    PRIMARY KEY (user_id, company_id),
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+                )");
+                $db->exec("INSERT OR IGNORE INTO user_companies (user_id, company_id, role) VALUES (1, 1, 'admin'), (1, 2, 'user'), (1, 3, 'user')");
+            }
+        },
         '005_add_company_branding' => function () use ($db, $isMySQL) {
             if ($isMySQL) {
                 try { $db->exec("ALTER TABLE companies ADD COLUMN theme VARCHAR(50) NOT NULL DEFAULT 'queenshop'"); } catch (Exception $e) {}
@@ -204,6 +227,24 @@ function runMigrations(PDO $db): void {
                 if ($cnt < 3) {
                     $db->exec("INSERT INTO companies (id, name, store_name, theme, logo, primary_color, description) VALUES (3, 'WolfStor', 'WolfStor', 'wolfstor', 'wolfstor-logo.svg', '#2563eb', 'Tienda de zapatos')");
                 }
+            }
+        },
+        '007_category_company_id' => function () use ($db, $isMySQL) {
+            if ($isMySQL) {
+                try { $db->exec("ALTER TABLE categories ADD COLUMN company_id INT DEFAULT NULL"); } catch (Exception $e) {}
+                $db->exec("UPDATE categories SET company_id = 1 WHERE company_id IS NULL");
+                $db->exec("INSERT IGNORE INTO categories (name, company_id) VALUES
+                    ('Sneakers', 3), ('Botas', 3), ('Zapatillas', 3), ('Sandalias', 3),
+                    ('Zapatos de Vestir', 3), ('Deportivos', 3), ('Ojotas', 3), ('Otros', 3)");
+            } else {
+                $info = $db->query("PRAGMA table_info(categories)")->fetchAll(PDO::FETCH_COLUMN, 1);
+                if (!in_array('company_id', $info)) {
+                    $db->exec("ALTER TABLE categories ADD COLUMN company_id INTEGER DEFAULT NULL");
+                }
+                $db->exec("UPDATE categories SET company_id = 1 WHERE company_id IS NULL");
+                $db->exec("INSERT OR IGNORE INTO categories (name, company_id) VALUES
+                    ('Sneakers', 3), ('Botas', 3), ('Zapatillas', 3), ('Sandalias', 3),
+                    ('Zapatos de Vestir', 3), ('Deportivos', 3), ('Ojotas', 3), ('Otros', 3)");
             }
         },
     ];

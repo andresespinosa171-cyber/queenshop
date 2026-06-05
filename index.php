@@ -78,6 +78,9 @@ $router->get('/returns/create',     'ReturnController@create');
 $router->post('/returns/store',     'ReturnController@store');
 $router->get('/returns/{id}',       'ReturnController@show');
 
+// Store switching
+$router->get('/switch-store/{id}', 'SwitchController@switch');
+
 // API (JSON)
 $router->get('/api/products', 'ProductController@apiList');
 

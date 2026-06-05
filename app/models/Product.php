@@ -140,7 +140,10 @@ class Product extends Model {
         );
     }
 
-    public function getAllCategories(): array {
+    public function getAllCategories(?int $companyId = null): array {
+        if ($companyId !== null) {
+            return $this->query("SELECT * FROM categories WHERE company_id = ? ORDER BY name", [$companyId])->fetchAll();
+        }
         return $this->query("SELECT * FROM categories ORDER BY name")->fetchAll();
     }
 

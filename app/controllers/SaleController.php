@@ -24,7 +24,7 @@ class SaleController extends Controller {
     }
 
     public function create(): void {
-        $categories = $this->product->getAllCategories();
+        $categories = $this->product->getAllCategories(current_company_id());
 
         // Get all clients for the selector
         $clientModel = new Client();

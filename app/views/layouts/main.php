@@ -1,3 +1,7 @@
+<?php
+$companyModel = new Company();
+$allCompanies = $companyModel->getAll();
+?>
 <!DOCTYPE html>
 <html lang="es" data-bs-theme="dark">
 <head>
@@ -67,6 +71,27 @@
                         </a>
                     </li>
                 </ul>
+
+                <?php if (!empty($_SESSION['user_id']) && count($allCompanies) > 1): ?>
+                    <span class="navbar-text ms-auto">
+                        <div class="dropdown d-inline-block">
+                            <a class="dropdown-toggle text-decoration-none text-light-emphasis" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-shop"></i> <?= htmlspecialchars(current_store_name()) ?>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <?php foreach ($allCompanies as $c): ?>
+                                    <li>
+                                        <a class="dropdown-item <?= (int)$c['id'] === current_company_id() ? 'active' : '' ?>"
+                                           href="<?= BASE_URL ?>/switch-store/<?= $c['id'] ?>">
+                                            <?= htmlspecialchars($c['store_name'] ?? $c['name']) ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    </span>
+                <?php endif; ?>
+
                 <span class="navbar-text small text-light-emphasis">
                     <i class="bi bi-calendar3"></i> <?= date('d/m/Y') ?>
                 </span>

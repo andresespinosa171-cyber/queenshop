@@ -18,7 +18,7 @@ class ProductController extends Controller {
         ];
 
         $products   = $this->product->getAll($filters, current_company_id());
-        $categories = $this->product->getAllCategories();
+        $categories = $this->product->getAllCategories(current_company_id());
 
         $this->view('products/index', [
             'products'   => $products,
@@ -29,7 +29,7 @@ class ProductController extends Controller {
     }
 
     public function create(): void {
-        $categories = $this->product->getAllCategories();
+        $categories = $this->product->getAllCategories(current_company_id());
         $this->view('products/create', [
             'categories' => $categories,
             'title'      => 'Nuevo Producto',
@@ -79,7 +79,7 @@ class ProductController extends Controller {
             return;
         }
 
-        $categories = $this->product->getAllCategories();
+        $categories = $this->product->getAllCategories(current_company_id());
         $this->view('products/edit', [
             'product'    => $product,
             'categories' => $categories,
