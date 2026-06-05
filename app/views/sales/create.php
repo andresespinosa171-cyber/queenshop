@@ -15,6 +15,52 @@
             <input type="hidden" name="final_total" id="finalTotalInput">
 
             <div class="row g-3">
+                <!-- ─── Client & Payment Info ──────────────────── -->
+                <div class="col-12 col-md-6">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <label class="form-label fw-medium">
+                                <i class="bi bi-person-fill"></i> Cliente
+                            </label>
+                            <select name="client_id" class="form-select">
+                                <option value="">Venta rápida (sin cliente)</option>
+                                <?php foreach ($clients as $c): ?>
+                                    <option value="<?= $c['id'] ?>"
+                                        <?= $preselectedClient == $c['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($c['name']) ?>
+                                        <?php if ((float)$c['total_debt'] > 0): ?>
+                                            (debe: <?= format_currency((float)$c['total_debt']) ?>)
+                                        <?php endif; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="form-text">Seleccioná un cliente para registrar deuda</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <label class="form-label fw-medium">
+                                <i class="bi bi-cash"></i> Estado de pago
+                            </label>
+                            <div class="d-flex gap-3 mt-1">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment_status"
+                                           id="psPaid" value="paid" checked>
+                                    <label class="form-check-label" for="psPaid">Pagado</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment_status"
+                                           id="psPending" value="pending">
+                                    <label class="form-check-label" for="psPending">Pendiente</label>
+                                </div>
+                            </div>
+                            <div class="form-text">Si queda debiendo, la deuda se agrega al cliente</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ─── Product Search ─────────────────────────── -->
                 <div class="col-12">
                     <div class="card shadow-sm border-0">

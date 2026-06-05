@@ -45,10 +45,10 @@
                 <tr>
                     <th>#</th>
                     <th>Fecha</th>
+                    <th>Cliente</th>
                     <th class="text-end">Productos</th>
-                    <th class="text-end">Total</th>
-                    <th class="text-end">Dto.</th>
                     <th class="text-end">Final</th>
+                    <th class="text-end">Pago</th>
                     <th style="width:80px"></th>
                 </tr>
             </thead>
@@ -57,12 +57,26 @@
                     <tr>
                         <td class="fw-medium"><?= $s['id'] ?></td>
                         <td><?= date('d/m/Y H:i', strtotime($s['created_at'])) ?></td>
-                        <td class="text-end"><?= $s['item_count'] ?></td>
-                        <td class="text-end"><?= format_currency($s['total']) ?></td>
-                        <td class="text-end text-danger">
-                            <?= $s['discount_percent'] > 0 ? $s['discount_percent'] . '%' : '—' ?>
+                        <td>
+                            <?php if (!empty($s['client_name'])): ?>
+                                <span class="badge bg-secondary-subtle text-secondary-emphasis">
+                                    <?= htmlspecialchars($s['client_name']) ?>
+                                </span>
+                            <?php else: ?>
+                                <span class="text-muted small">—</span>
+                            <?php endif; ?>
                         </td>
+                        <td class="text-end"><?= $s['item_count'] ?></td>
                         <td class="text-end fw-bold"><?= format_currency($s['final_total']) ?></td>
+                        <td class="text-end">
+                            <?php if (($s['payment_status'] ?? 'paid') === 'paid'): ?>
+                                <span class="badge bg-success">Pagado</span>
+                            <?php elseif ($s['payment_status'] === 'pending'): ?>
+                                <span class="badge bg-danger">Debe</span>
+                            <?php elseif ($s['payment_status'] === 'partial'): ?>
+                                <span class="badge bg-warning text-dark">Parcial</span>
+                            <?php endif; ?>
+                        </td>
                         <td>
                             <a href="<?= BASE_URL ?>/sales/<?= $s['id'] ?>" class="btn btn-sm btn-outline-secondary"
                                title="Ver detalle">

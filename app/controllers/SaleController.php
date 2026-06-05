@@ -25,9 +25,18 @@ class SaleController extends Controller {
 
     public function create(): void {
         $categories = $this->product->getAllCategories();
+
+        // Get all clients for the selector
+        $clientModel = new Client();
+        $clients = $clientModel->getAllByCompany(current_company_id());
+
+        $preselectedClient = !empty($_GET['client_id']) ? (int)$_GET['client_id'] : null;
+
         $this->view('sales/create', [
-            'categories' => $categories,
-            'title'      => 'Nueva Venta',
+            'categories'         => $categories,
+            'clients'            => $clients,
+            'preselectedClient'  => $preselectedClient,
+            'title'              => 'Nueva Venta',
         ]);
     }
 
@@ -44,6 +53,10 @@ class SaleController extends Controller {
         $discountAmount  = (float) ($_POST['discount_amount'] ?? 0);
         $finalTotal      = (float) ($_POST['final_total'] ?? 0);
         $itemCount       = 0;
+
+        $clientId       = !empty($_POST['client_id']) ? (int) $_POST['client_id'] : null;
+        $paymentStatus  = $_POST['payment_status'] ?? 'paid';
+        $pendingAmount  = ($paymentStatus === 'pending' || $paymentStatus === 'partial') ? $finalTotal : 0;
 
         $items = [];
         foreach ($rawItems as $ri) {
@@ -68,13 +81,24 @@ class SaleController extends Controller {
         }
 
         try {
-            $this->sale->createWithItems([
-                'total'           => $total,
+            $saleData = [
+                'total'            => $total,
                 'discount_percent' => $discountPercent,
-                'discount_amount' => $discountAmount,
-                'final_total'     => $finalTotal,
-                'item_count'      => $itemCount,
-            ], $items, current_company_id());
+                'discount_amount'  => $discountAmount,
+                'final_total'      => $finalTotal,
+                'item_count'       => $itemCount,
+                'client_id'        => $clientId,
+                'payment_status'   => $paymentStatus,
+                'pending_amount'   => $pendingAmount,
+            ];
+
+            $saleId = $this->sale->createWithItems($saleData, $items, current_company_id());
+
+            // Update client debt if pending
+            if ($clientId && $pendingAmount > 0) {
+                $clientModel = new Client();
+                $clientModel->adjustDebt($clientId, $pendingAmount);
+            }
 
             session_flash('success', 'Venta registrada correctamente.');
             $this->redirect('/sales');
@@ -92,9 +116,17 @@ class SaleController extends Controller {
             return;
         }
 
+        // Get client info if set
+        $client = null;
+        if (!empty($sale['client_id'])) {
+            $clientModel = new Client();
+            $client = $clientModel->find($sale['client_id']);
+        }
+
         $this->view('sales/show', [
-            'sale'  => $sale,
-            'title' => 'Venta #' . $id,
+            'sale'   => $sale,
+            'client' => $client,
+            'title'  => 'Venta #' . $id,
         ]);
     }
 

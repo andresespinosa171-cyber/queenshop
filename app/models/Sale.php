@@ -34,7 +34,7 @@ class Sale extends Model {
     }
 
     public function getAll(array $filters = [], ?int $companyId = null): array {
-        $sql = "SELECT s.* FROM sales s WHERE 1=1";
+        $sql = "SELECT s.*, c.name AS client_name FROM sales s LEFT JOIN clients c ON s.client_id = c.id WHERE 1=1";
         $params = [];
 
         // Company scoping

@@ -36,9 +36,13 @@ CREATE TABLE IF NOT EXISTS sales (
     discount_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     final_total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     item_count INTEGER NOT NULL DEFAULT 0,
+    client_id INTEGER DEFAULT NULL,
+    payment_status TEXT NOT NULL DEFAULT 'paid',
+    pending_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     company_id INTEGER NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS sale_items (

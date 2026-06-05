@@ -114,6 +114,24 @@ function runMigrations(PDO $db): void {
                 )");
             }
         },
+        '003_add_client_to_sales' => function () use ($db, $isMySQL) {
+            if ($isMySQL) {
+                try { $db->exec("ALTER TABLE sales ADD COLUMN client_id INT DEFAULT NULL"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE sales ADD COLUMN payment_status VARCHAR(20) NOT NULL DEFAULT 'paid'"); } catch (Exception $e) {}
+                try { $db->exec("ALTER TABLE sales ADD COLUMN pending_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00"); } catch (Exception $e) {}
+            } else {
+                $info = $db->query("PRAGMA table_info(sales)")->fetchAll(PDO::FETCH_COLUMN, 1);
+                if (!in_array('client_id', $info)) {
+                    $db->exec("ALTER TABLE sales ADD COLUMN client_id INTEGER DEFAULT NULL");
+                }
+                if (!in_array('payment_status', $info)) {
+                    $db->exec("ALTER TABLE sales ADD COLUMN payment_status TEXT NOT NULL DEFAULT 'paid'");
+                }
+                if (!in_array('pending_amount', $info)) {
+                    $db->exec("ALTER TABLE sales ADD COLUMN pending_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00");
+                }
+            }
+        },
     ];
 
     foreach ($migrations as $name => $callback) {

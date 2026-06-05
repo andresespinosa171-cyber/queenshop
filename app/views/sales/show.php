@@ -7,6 +7,39 @@
             <h4 class="mb-0"><i class="bi bi-receipt"></i> Venta #<?= $sale['id'] ?></h4>
         </div>
 
+        <!-- ─── Client & Status Info ─────────────────────────────── -->
+        <?php if (!empty($client) || !empty($sale['payment_status'])): ?>
+            <div class="row g-2 mb-3">
+                <?php if (!empty($client)): ?>
+                    <div class="col-6">
+                        <div class="card shadow-sm border-0 bg-body-tertiary">
+                            <div class="card-body py-2 px-3">
+                                <small class="text-muted d-block">Cliente</small>
+                                <a href="<?= BASE_URL ?>/clients/<?= $client['id'] ?>" class="fw-medium text-decoration-none">
+                                    <i class="bi bi-person-fill"></i> <?= htmlspecialchars($client['name']) ?>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <div class="col-6">
+                    <div class="card shadow-sm border-0 bg-body-tertiary">
+                        <div class="card-body py-2 px-3">
+                            <small class="text-muted d-block">Estado de pago</small>
+                            <?php $ps = $sale['payment_status'] ?? 'paid'; ?>
+                            <?php if ($ps === 'paid'): ?>
+                                <span class="badge bg-success fs-6"><i class="bi bi-check-circle"></i> Pagado</span>
+                            <?php elseif ($ps === 'pending'): ?>
+                                <span class="badge bg-danger fs-6"><i class="bi bi-exclamation-circle"></i> Pendiente — debe <?= format_currency((float)$sale['pending_amount']) ?></span>
+                            <?php elseif ($ps === 'partial'): ?>
+                                <span class="badge bg-warning text-dark fs-6"><i class="bi bi-clock"></i> Parcial — debe <?= format_currency((float)$sale['pending_amount']) ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <div class="card shadow-sm border-0">
             <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
                 <span class="fw-medium">Detalle de venta</span>
