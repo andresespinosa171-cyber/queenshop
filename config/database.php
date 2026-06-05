@@ -132,6 +132,55 @@ function runMigrations(PDO $db): void {
                 }
             }
         },
+        '004_returns' => function () use ($db, $isMySQL) {
+            if ($isMySQL) {
+                $db->exec("CREATE TABLE IF NOT EXISTS returns (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    sale_id INT NOT NULL,
+                    company_id INT NOT NULL DEFAULT 1,
+                    return_type VARCHAR(20) NOT NULL DEFAULT 'refund',
+                    reason TEXT NOT NULL,
+                    total_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE,
+                    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+                )");
+                $db->exec("CREATE TABLE IF NOT EXISTS return_items (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    return_id INT NOT NULL,
+                    product_id INT NOT NULL,
+                    product_name VARCHAR(200) NOT NULL,
+                    quantity INT NOT NULL DEFAULT 1,
+                    unit_price DECIMAL(10,2) NOT NULL,
+                    subtotal DECIMAL(10,2) NOT NULL,
+                    action VARCHAR(20) NOT NULL DEFAULT 'restock',
+                    FOREIGN KEY (return_id) REFERENCES returns(id) ON DELETE CASCADE
+                )");
+            } else {
+                $db->exec("CREATE TABLE IF NOT EXISTS returns (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    sale_id INTEGER NOT NULL,
+                    company_id INTEGER NOT NULL DEFAULT 1,
+                    return_type TEXT NOT NULL DEFAULT 'refund',
+                    reason TEXT NOT NULL,
+                    total_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE,
+                    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+                )");
+                $db->exec("CREATE TABLE IF NOT EXISTS return_items (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    return_id INTEGER NOT NULL,
+                    product_id INTEGER NOT NULL,
+                    product_name TEXT NOT NULL,
+                    quantity INTEGER NOT NULL DEFAULT 1,
+                    unit_price DECIMAL(10,2) NOT NULL,
+                    subtotal DECIMAL(10,2) NOT NULL,
+                    action TEXT NOT NULL DEFAULT 'restock',
+                    FOREIGN KEY (return_id) REFERENCES returns(id) ON DELETE CASCADE
+                )");
+            }
+        },
     ];
 
     foreach ($migrations as $name => $callback) {

@@ -50,6 +50,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], BASE_URL . '/return') ? 'active' : '' ?>"
+                           href="<?= BASE_URL ?>/returns">
+                            <i class="bi bi-arrow-return-left"></i> Devoluciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], BASE_URL . '/accounting') ? 'active' : '' ?>"
                            href="<?= BASE_URL ?>/accounting">
                             <i class="bi bi-graph-up"></i> Contabilidad

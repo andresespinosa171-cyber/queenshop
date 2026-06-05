@@ -58,6 +58,22 @@ class Sale extends Model {
         return $this->query($sql, $params)->fetchAll();
     }
 
+    public function getByClientName(string $search, ?int $companyId = null): array {
+        $sql = "SELECT s.id, s.final_total, s.created_at, c.name AS client_name
+                FROM sales s
+                LEFT JOIN clients c ON s.client_id = c.id
+                WHERE c.name LIKE ?";
+        $params = ['%' . $search . '%'];
+
+        if ($companyId !== null) {
+            $sql .= " AND s.company_id = ?";
+            $params[] = $companyId;
+        }
+
+        $sql .= " ORDER BY s.created_at DESC LIMIT 20";
+        return $this->query($sql, $params)->fetchAll();
+    }
+
     public function getByClient(int|string $clientId): array {
         return $this->query(
             "SELECT s.* FROM sales s WHERE s.client_id = ? ORDER BY s.created_at DESC",

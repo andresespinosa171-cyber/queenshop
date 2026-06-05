@@ -72,6 +72,12 @@ $router->get('/sales/create',   'SaleController@create');
 $router->post('/sales/store',   'SaleController@store');
 $router->get('/sales/{id}',     'SaleController@show');
 
+// Returns
+$router->get('/returns',           'ReturnController@index');
+$router->get('/returns/create',     'ReturnController@create');
+$router->post('/returns/store',     'ReturnController@store');
+$router->get('/returns/{id}',       'ReturnController@show');
+
 // API (JSON)
 $router->get('/api/products', 'ProductController@apiList');
 

@@ -83,6 +83,30 @@ CREATE TABLE IF NOT EXISTS debt_payments (
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS returns (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sale_id INT NOT NULL,
+    company_id INT NOT NULL DEFAULT 1,
+    return_type VARCHAR(20) NOT NULL DEFAULT 'refund',
+    reason TEXT NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE,
+    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS return_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    return_id INT NOT NULL,
+    product_id INT NOT NULL,
+    product_name VARCHAR(200) NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    unit_price DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    action VARCHAR(20) NOT NULL DEFAULT 'restock',
+    FOREIGN KEY (return_id) REFERENCES returns(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     company_id INT NOT NULL,
