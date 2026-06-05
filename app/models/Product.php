@@ -54,7 +54,7 @@ class Product extends Model {
             $params[] = (int) $filters['category_id'];
         }
 
-        // Stock filter
+        // Stock filter: hide out-of-stock by default
         if (!empty($filters['stock'])) {
             switch ($filters['stock']) {
                 case 'out':
@@ -70,6 +70,9 @@ class Product extends Model {
                     $sql .= " AND p.stock > 20";
                     break;
             }
+        } else {
+            // Por defecto: no mostrar productos sin stock
+            $sql .= " AND p.stock > 0";
         }
 
         // Sorting

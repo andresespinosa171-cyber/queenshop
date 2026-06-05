@@ -136,19 +136,19 @@
         <table class="table table-dark table-hover align-middle mb-0">
             <thead class="table-dark" style="border-bottom: 2px solid #ffc10733;">
                 <tr>
-                    <th style="width:50px">Foto</th>
-                    <th>Nombre</th>
+                    <th class="text-light" style="width:50px">Foto</th>
+                    <th class="text-light">Nombre</th>
                     <?php if ($isWolfStor): ?>
-                    <th>Color</th>
-                    <th>Marca</th>
-                    <th>Género</th>
-                    <th>Tipo</th>
+                    <th class="text-light">Color</th>
+                    <th class="text-light">Marca</th>
+                    <th class="text-light">Género</th>
+                    <th class="text-light">Tipo</th>
                     <?php endif; ?>
-                    <th>Categoría</th>
-                    <th class="text-end">Compra</th>
-                    <th class="text-end">Venta</th>
-                    <th class="text-end">Stock</th>
-                    <th class="text-end">Ganancia</th>
+                    <th class="text-light">Categoría</th>
+                    <th class="text-end text-light">Compra</th>
+                    <th class="text-end text-light">Venta</th>
+                    <th class="text-end text-light">Stock</th>
+                    <th class="text-end text-light">Ganancia</th>
                     <th style="width:120px"></th>
                 </tr>
             </thead>
@@ -180,11 +180,11 @@
                         <td>
                             <div class="d-flex gap-1 justify-content-end">
                                 <a href="<?= BASE_URL ?>/products/edit/<?= $p['id'] ?>"
-                                   class="btn btn-sm btn-outline-secondary"
+                                   class="btn btn-sm btn-secondary"
                                    title="Editar">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <button class="btn btn-sm btn-outline-info"
+                                <button class="btn btn-sm btn-warning"
                                         title="Agregar stock"
                                         data-bs-toggle="modal"
                                         data-bs-target="#restockModal"
@@ -194,7 +194,7 @@
                                 </button>
                                 <form method="POST" action="<?= BASE_URL ?>/products/delete/<?= $p['id'] ?>"
                                       onsubmit="return confirm(<?= htmlspecialchars(json_encode('¿Eliminar ' . $p['name'] . '?'), ENT_QUOTES) ?>)">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
